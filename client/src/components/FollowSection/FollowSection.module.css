@@ -1,0 +1,28 @@
+.container {
+    margin-top: 70px;
+    padding: 16px;
+}
+.title {
+    color: #fff;
+    font-size: 18px;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+.followSection {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    gap: 16px;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+.followSection > * {
+    width: 140px;
+    flex-shrink: 0;
+}
+
+.followSection::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+}

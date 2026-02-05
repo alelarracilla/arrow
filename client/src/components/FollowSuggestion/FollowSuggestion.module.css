@@ -1,0 +1,50 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 8px;
+    background-color: #10141B;
+}
+
+.profilePhoto {
+    width: 84px;
+    height: 84px;
+    border-radius: 9999px;
+    object-fit: cover;
+}
+
+.name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.button {
+    padding: 4px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.buttonFollowing {
+    background-color: #e5e7eb;
+    color: #111827;
+}
+
+.buttonFollowing:hover {
+    background-color: #d1d5db;
+}
+
+.buttonFollow {
+    background-color: #16F2A5;
+    color: white;
+}
+
+.buttonFollow:hover {
+    background-color: #2563eb;
+}
