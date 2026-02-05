@@ -1,0 +1,28 @@
+# Dependencies
+lib/
+
+# Build artifacts
+out/
+cache/
+
+# AST output
+ast/
+
+# Docs
+docs/
+
+# Dotenv
+.env
+
+# Coverage
+lcov.info
+coverage/
+
+# Gas snapshots
+.gas-snapshot
+
+# Broadcast logs
+broadcast/
+
+# Node
+node_modules/
