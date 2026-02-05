@@ -1,0 +1,47 @@
+/* NewsCard.module.css */
+
+.newsCard {
+    border-radius: 0.5rem; /* rounded-lg */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-lg */
+    overflow: hidden;
+    background-color: #10141B;
+}
+
+.newsCardImage {
+    width: 100%; /* w-full */
+    height: 12rem; /* h-48 */
+    object-fit: cover; /* object-cover */
+}
+
+.newsCardContent {
+    padding: 1rem; /* p-4 */
+}
+
+.newsCardTitle {
+    font-size: 1.25rem; /* text-xl */
+    font-weight: bold; /* font-bold */
+    margin-bottom: 0.5rem; /* mb-2 */
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* gap-2 */
+}
+
+.newsCardDescription {
+    color: #4A5568; /* text-gray-600 */
+    font-size: 0.875rem; /* text-sm */
+    margin-bottom: 1rem; /* mb-4 */
+}
+
+.newsCardButton {
+    background-color: #16F2A5; /* bg-blue-500 */
+    color: white; /* text-white */
+    font-weight: 600; /* font-semibold */
+    padding: 0.5rem 1rem; /* py-2 px-4 */
+    border-radius: 0.25rem; /* rounded */
+    float: right;
+    margin-bottom: 20px;
+}
+
+.newsCardButton:hover {
+    background-color: #3182CE; /* hover:bg-blue-600 */
+}

@@ -1,6 +1,7 @@
 import './App.css'
 import { FollowSection } from './components/FollowSection/FollowSection'
 import NavBar from './components/NavBar/NavBar'
+import { NewsSection } from './components/NewsSection/NewsSection'
 import { SearchBar } from './components/SearchBar/SearchBar'
 
 function App(){ 
@@ -9,6 +10,7 @@ function App(){
     <div >
       <SearchBar />
       <FollowSection />
+      <NewsSection />
       <NavBar />
     </div>
   )
