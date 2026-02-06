@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { HiBars3 } from "react-icons/hi2";
 import { HiMiniMagnifyingGlass } from "react-icons/hi2";
 import arrowImg from '../../assets/arrow.svg';
-
+import { ConnectWallet } from '../ConnectWallet/ConnectWallet';
 import styles from './SearchBar.module.css';
 
 interface SearchBarProps {
@@ -62,10 +62,8 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                 )}
             </div>
 
-            {/* 3. Lado Derecho: Botón de Configuración */}
-            <button className={styles.filterButton} onClick={onFilterClick}>
-                Connect
-            </button>
+            {/* 3. Lado Derecho: Circle Wallet */}
+            <ConnectWallet />
         </div>
     );
 };
