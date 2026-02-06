@@ -48,6 +48,7 @@ router.post("/wallet", (req: Request, res: Response): void => {
       username: user!.username,
       bio: user!.bio,
       avatar_url: user!.avatar_url,
+      ens_name: user!.ens_name,
       is_leader: user!.is_leader,
     },
   });
@@ -78,6 +79,7 @@ router.get("/me", authRequired, (req: Request, res: Response): void => {
       username: user.username,
       bio: user.bio,
       avatar_url: user.avatar_url,
+      ens_name: user.ens_name,
       is_leader: user.is_leader,
       follower_count: followerCount,
       following_count: followingCount,
@@ -86,7 +88,7 @@ router.get("/me", authRequired, (req: Request, res: Response): void => {
 });
 
 router.patch("/me", authRequired, (req: Request, res: Response): void => {
-  const { username, bio, avatar_url } = req.body;
+  const { username, bio, avatar_url, ens_name } = req.body;
   const userId = req.user!.userId;
 
   const fields: string[] = [];
@@ -103,6 +105,10 @@ router.patch("/me", authRequired, (req: Request, res: Response): void => {
   if (avatar_url !== undefined) {
     fields.push("avatar_url = ?");
     values.push(avatar_url);
+  }
+  if (ens_name !== undefined) {
+    fields.push("ens_name = ?");
+    values.push(ens_name);
   }
 
   if (fields.length === 0) {

@@ -5,6 +5,41 @@ import { authRequired } from "../middleware/auth";
 
 const router = Router();
 
+function getRequestingUserId(req: Request): string | null {
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith("Bearer ")) return null;
+  try {
+    const jwt = require("jsonwebtoken");
+    const payload = jwt.verify(authHeader.slice(7), process.env.JWT_SECRET || "arrow-dev-secret");
+    return payload.userId || null;
+  } catch {
+    return null;
+  }
+}
+
+function enrichPosts(posts: Record<string, unknown>[], requestingUserId: string | null) {
+  return posts.map((p) => {
+    const likeCount = (
+      db.prepare("SELECT COUNT(*) as count FROM likes WHERE post_id = ?").get(p.id as string) as { count: number }
+    ).count;
+
+    const commentCount = (
+      db.prepare("SELECT COUNT(*) as count FROM comments WHERE post_id = ?").get(p.id as string) as { count: number }
+    ).count;
+
+    const tipCount = (
+      db.prepare("SELECT COUNT(*) as count FROM tips WHERE to_id = ?").get(p.author_id as string) as { count: number }
+    ).count;
+
+    let isLiked = false;
+    if (requestingUserId) {
+      isLiked = !!db.prepare("SELECT 1 FROM likes WHERE user_id = ? AND post_id = ?").get(requestingUserId, p.id as string);
+    }
+
+    return { ...p, like_count: likeCount, comment_count: commentCount, author_tip_count: tipCount, is_liked: isLiked };
+  });
+}
+
 // GET /posts — feed (all posts, newest first)
 // this should be paginated, wont due to time (prolly)
 router.get("/", (req: Request, res: Response): void => {
@@ -21,18 +56,7 @@ router.get("/", (req: Request, res: Response): void => {
     )
     .all(limit, offset) as Record<string, unknown>[];
 
-  // Attach tip count :3
-  const enriched = posts.map((p) => {
-    const tipCount = (
-      db
-        .prepare("SELECT COUNT(*) as count FROM tips WHERE to_id = ?")
-        .get(p.author_id as string) as { count: number }
-    ).count;
-
-    return { ...p, author_tip_count: tipCount };
-  });
-
-  res.json({ posts: enriched });
+  res.json({ posts: enrichPosts(posts, getRequestingUserId(req)) });
 });
 
 // GET /posts/:id
@@ -51,7 +75,8 @@ router.get("/:id", (req: Request, res: Response): void => {
     return;
   }
 
-  res.json({ post });
+  const [enriched] = enrichPosts([post], getRequestingUserId(req));
+  res.json({ post: enriched });
 });
 
 // POST /posts — create a post (with optional pair metadata for "Set Order")
@@ -128,9 +153,9 @@ router.get("/user/:userId", (req: Request, res: Response): void => {
        ORDER BY p.created_at DESC
        LIMIT ? OFFSET ?`
     )
-    .all(req.params.userId, limit, offset);
+    .all(req.params.userId, limit, offset) as Record<string, unknown>[];
 
-  res.json({ posts });
+  res.json({ posts: enrichPosts(posts, getRequestingUserId(req)) });
 });
 
 // GET /posts/feed/following — posts from users I follow
@@ -149,9 +174,9 @@ router.get("/feed/following", authRequired, (req: Request, res: Response): void 
        ORDER BY p.created_at DESC
        LIMIT ? OFFSET ?`
     )
-    .all(req.user!.userId, limit, offset);
+    .all(req.user!.userId, limit, offset) as Record<string, unknown>[];
 
-  res.json({ posts });
+  res.json({ posts: enrichPosts(posts, req.user!.userId) });
 });
 
 export default router;

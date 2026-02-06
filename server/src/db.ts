@@ -18,6 +18,7 @@ db.exec(`
     username TEXT UNIQUE,
     bio TEXT DEFAULT '',
     avatar_url TEXT DEFAULT '',
+    ens_name TEXT DEFAULT '',
     is_leader INTEGER DEFAULT 0,
     created_at TEXT DEFAULT (datetime('now'))
   );
@@ -65,7 +66,45 @@ db.exec(`
     tx_hash TEXT DEFAULT '',
     created_at TEXT DEFAULT (datetime('now'))
   );
+
+  CREATE TABLE IF NOT EXISTS likes (
+    user_id TEXT NOT NULL REFERENCES users(id),
+    post_id TEXT NOT NULL REFERENCES posts(id),
+    created_at TEXT DEFAULT (datetime('now')),
+    PRIMARY KEY (user_id, post_id)
+  );
+
+  CREATE TABLE IF NOT EXISTS comments (
+    id TEXT PRIMARY KEY,
+    post_id TEXT NOT NULL REFERENCES posts(id),
+    author_id TEXT NOT NULL REFERENCES users(id),
+    content TEXT NOT NULL,
+    created_at TEXT DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS trade_proposals (
+    id TEXT PRIMARY KEY,
+    user_address TEXT NOT NULL,
+    type TEXT NOT NULL,
+    zero_for_one INTEGER NOT NULL,
+    amount TEXT NOT NULL,
+    token0 TEXT DEFAULT '',
+    token1 TEXT DEFAULT '',
+    pool_fee INTEGER DEFAULT 3000,
+    leader_address TEXT DEFAULT '',
+    ai_confidence REAL DEFAULT 0,
+    ai_reason TEXT DEFAULT '',
+    slippage_bps INTEGER DEFAULT 50,
+    urgency TEXT DEFAULT 'medium',
+    status TEXT DEFAULT 'pending',
+    tx_hash TEXT DEFAULT '',
+    expires_at TEXT DEFAULT (datetime('now', '+5 minutes')),
+    created_at TEXT DEFAULT (datetime('now'))
+  );
 `);
+
+// Migrations
+try { db.exec("ALTER TABLE users ADD COLUMN ens_name TEXT DEFAULT ''"); } catch { /* column already exists */ }
 
 db.exec(`
   CREATE INDEX IF NOT EXISTS idx_posts_author ON posts(author_id);
@@ -76,6 +115,12 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_tips_from ON tips(from_id);
   CREATE INDEX IF NOT EXISTS idx_limit_orders_user ON limit_orders(user_id);
   CREATE INDEX IF NOT EXISTS idx_limit_orders_status ON limit_orders(status);
+  CREATE INDEX IF NOT EXISTS idx_trade_proposals_user ON trade_proposals(user_address);
+  CREATE INDEX IF NOT EXISTS idx_trade_proposals_status ON trade_proposals(status);
+  CREATE INDEX IF NOT EXISTS idx_likes_post ON likes(post_id);
+  CREATE INDEX IF NOT EXISTS idx_likes_user ON likes(user_id);
+  CREATE INDEX IF NOT EXISTS idx_comments_post ON comments(post_id);
+  CREATE INDEX IF NOT EXISTS idx_comments_author ON comments(author_id);
 `);
 
 export default db;

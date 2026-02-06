@@ -6,7 +6,7 @@ const router = Router();
 
 router.get("/:id", (req: Request, res: Response): void => {
   const user = db
-    .prepare("SELECT id, address, username, bio, avatar_url, is_leader, created_at FROM users WHERE id = ?")
+    .prepare("SELECT id, address, username, bio, avatar_url, ens_name, is_leader, created_at FROM users WHERE id = ?")
     .get(req.params.id) as Record<string, unknown> | undefined;
 
   if (!user) {
@@ -30,6 +30,20 @@ router.get("/:id", (req: Request, res: Response): void => {
     db.prepare("SELECT COALESCE(SUM(CAST(amount AS REAL)), 0) as total FROM tips WHERE to_id = ?").get(user.id as string) as { total: number }
   ).total;
 
+  let isFollowing = false;
+  const authHeader = req.headers.authorization;
+  if (authHeader?.startsWith("Bearer ")) {
+    try {
+      const jwt = require("jsonwebtoken");
+      const payload = jwt.verify(authHeader.slice(7), process.env.JWT_SECRET || "arrow-dev-secret");
+      if (payload.userId && payload.userId !== user.id) {
+        const row = db.prepare("SELECT 1 FROM follows WHERE follower_id = ? AND leader_id = ?").get(payload.userId, user.id as string);
+        isFollowing = !!row;
+      }
+    } catch {
+    }
+  }
+
   res.json({
     user: {
       ...user,
@@ -37,6 +51,7 @@ router.get("/:id", (req: Request, res: Response): void => {
       following_count: followingCount,
       post_count: postCount,
       total_tips_received: totalTips,
+      is_following: isFollowing,
     },
   });
 });
@@ -44,7 +59,7 @@ router.get("/:id", (req: Request, res: Response): void => {
 router.get("/address/:address", (req: Request, res: Response): void => {
   const normalized = (req.params.address as string).toLowerCase();
   const user = db
-    .prepare("SELECT id, address, username, bio, avatar_url, is_leader, created_at FROM users WHERE address = ?")
+    .prepare("SELECT id, address, username, bio, avatar_url, ens_name, is_leader, created_at FROM users WHERE address = ?")
     .get(normalized) as Record<string, unknown> | undefined;
 
   if (!user) {

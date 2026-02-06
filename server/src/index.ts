@@ -7,6 +7,9 @@ import postsRoutes from "./routes/posts";
 import usersRoutes from "./routes/users";
 import tipsRoutes from "./routes/tips";
 import ordersRoutes from "./routes/orders";
+import tradeProposalsRoutes from "./routes/tradeProposals";
+import likesRoutes from "./routes/likes";
+import commentsRoutes from "./routes/comments";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -19,6 +22,9 @@ app.use("/posts", postsRoutes);
 app.use("/users", usersRoutes);
 app.use("/tips", tipsRoutes);
 app.use("/orders", ordersRoutes);
+app.use("/trade-proposals", tradeProposalsRoutes);
+app.use("/posts", likesRoutes);
+app.use("/posts", commentsRoutes);
 
 // Agent events endpoint (receives notifications from the AI agent)
 app.post("/agent/events", (req, res) => {
