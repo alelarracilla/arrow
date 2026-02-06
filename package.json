@@ -1,0 +1,31 @@
+{
+    "name": "arrow-monorepo",
+    "private": true,
+    "type": "module",
+    "workspaces": [
+        "server",
+        "client",
+        "agent"
+    ],
+    "scripts": {
+        "dev": "concurrently -k -n \"BE,FE,AGENT\" -c \"blue,green,yellow\" \"npm run dev:server\" \"npm run dev:client\" \"npm run dev:agent\"",
+        "dev:server": "npm --workspace server run dev",
+        "dev:client": "npm --workspace client run dev",
+        "dev:agent": "npm --workspace agent run dev",
+        "build:server": "npm --workspace server run build",
+        "build:client": "npm --workspace client run build",
+        "build:agent": "npm --workspace agent run build",
+        "build": "npm --workspace server run build && npm --workspace client run build && npm --workspace agent run build",
+        "test": "npm --workspace server run test && npm --workspace agent run test",
+        "test:server": "npm --workspace server run test",
+        "test:client": "npm --workspace client run test",
+        "test:agent": "npm --workspace agent run test",
+        "test:watch": "npm --workspace server run test:watch",
+        "seed": "npm --workspace server run seed"
+    },
+    "dependencies": {
+        "concurrently": "^9.0.1",
+        "sweetalert2": "^11.26.3",
+        "sweetalert2-react-content": "^5.1.0"
+    }
+}
