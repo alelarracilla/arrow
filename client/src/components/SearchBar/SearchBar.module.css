@@ -1,47 +1,63 @@
-.searchBar {
+.navContainer {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 8px 16px;
-    border-radius: 8px;
-    width: 100%;
-    position: fixed;
-    top: 0;
-    background-color: #1e1e1e;
+    background: #1e1e1e;
+    gap: 10px;
 }
 
-.searchInputContainer {
-    position: relative;
+.centerSection {
     flex: 1;
-    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
 }
 
-.searchIcon {
-    color: #f2f2f2;
-    margin-right: 12px;
-    font-size: 20px;
-    position: absolute;
-    top: 10px;
-    left: 12px;
+.searchCircle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.searchCircle:hover {
+    background: #e0e0e0;
+}
+
+.expandedSearch {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    background: #f0f0f0;
+    border-radius: 20px;
+    padding: 0 10px;
 }
 
 .searchInput {
+    flex: 1;
     border: none;
+    background: transparent;
+    padding: 10px;
     outline: none;
-    width: 100%;
-    font-size: 16px;
-    background-color: #171C26;
-    border-radius: 20px;
-    color: #f2f2f2;
-    padding: 8px 16px;
-    padding-left: 40px;
 }
 
-.filterButton {
-    background-color: #171C26;
-    color: #f2f2f2;
-    border-radius: 50%;
-    padding: 8px;
+.iconButton, .filterButton {
+    background: none;
+    border: none;
     cursor: pointer;
     display: flex;
     align-items: center;
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 1.2rem;
 }
