@@ -1,7 +1,7 @@
 import "dotenv/config";
 
 export const config = {
-  rpcUrl: process.env.ARC_RPC_URL || "https://rpc-testnet.arc.network",
+  rpcUrl: process.env.ARC_RPC_URL || "https://rpc.testnet.arc.network",
 
   hookAddress: process.env.HOOK_ADDRESS as `0x${string}` | undefined,
   tippingAddress: process.env.TIPPING_ADDRESS as `0x${string}` | undefined,
