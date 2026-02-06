@@ -1,41 +1,43 @@
 import styles from "./FollowSection.module.css";
 import { FollowSuggestion } from "../FollowSuggestion/FollowSuggestion";
+import u1img from "../../assets/u1.png";
+import u2img from "../../assets/u2.png";
 
 const FOLLOSUGGESTION_PLACEHOLDER = [
   {
     id: "1",
     name: "john_doe",
-    profilePhoto: "https://picsum.photos/id/1/200/300",
+    profilePhoto: u1img,
   },
   {
     id: "2",
     name: "jane_smith",
-    profilePhoto: "https://picsum.photos/id/1/200/300",
+    profilePhoto: u2img,
   },
   {
     id: "3",
     name: "alice_jones",
-    profilePhoto: "https://picsum.photos/id/1/200/300",
+    profilePhoto: u1img,
   },
   {
     id: "4",
     name: "bob_brown",
-    profilePhoto: "https://picsum.photos/id/1/200/300",
+    profilePhoto: u2img,
   },
   {
     id: "5",
     name: "charlie_black",
-    profilePhoto: "https://picsum.photos/id/1/200/300",
+    profilePhoto: u1img,
   },
   {
     id: "6",
     name: "david_white",
-    profilePhoto: "https://picsum.photos/id/1/200/300",
+    profilePhoto: u2img,
   },
   {
     id: "7",
     name: "eve_green",
-    profilePhoto: "https://picsum.photos/id/1/200/300",
+    profilePhoto: u1img,
   },
 ];
 

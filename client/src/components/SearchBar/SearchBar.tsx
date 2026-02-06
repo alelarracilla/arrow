@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { HiMiniCog8Tooth, HiMagnifyingGlass, HiBars3 } from "react-icons/hi2";
+import { HiBars3 } from "react-icons/hi2";
+import { HiMiniMagnifyingGlass } from "react-icons/hi2";
+import arrowImg from '../../assets/arrow.svg';
+
 import styles from './SearchBar.module.css';
 
 interface SearchBarProps {
@@ -38,9 +41,9 @@ export const SearchBar: React.FC<SearchBarProps> = ({
             <div className={styles.centerSection}>
                 {!isExpanded ? (
                     <>
-                        <div className={styles.logo}>LOGO</div>
+                        <img src={arrowImg} alt="Arrow Logo" className={styles.logo} />
                         <button className={styles.searchCircle} onClick={toggleSearch}>
-                            <HiMagnifyingGlass size={20} />
+                            <HiMiniMagnifyingGlass size={20} /> 
                         </button>
                     </>
                 ) : (
@@ -61,7 +64,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 
             {/* 3. Lado Derecho: Botón de Configuración */}
             <button className={styles.filterButton} onClick={onFilterClick}>
-                <HiMiniCog8Tooth size={24} />
+                Connect
             </button>
         </div>
     );

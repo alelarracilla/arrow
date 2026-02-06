@@ -5,6 +5,10 @@
     padding: 8px 16px;
     background: #1e1e1e;
     gap: 10px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
 }
 
 .centerSection {
@@ -16,11 +20,12 @@
 }
 
 .searchCircle {
-    width: 40px;
-    height: 40px;
+    width: 55px;
+    height: 55px;
     border-radius: 50%;
     border: none;
-    background: #f0f0f0;
+    background: #171C26;
+    color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -46,6 +51,7 @@
     border: none;
     background: transparent;
     padding: 10px;
+    color: #333;
     outline: none;
 }
 
@@ -60,4 +66,13 @@
 .logo {
     font-weight: bold;
     font-size: 1.2rem;
+}
+
+.closeSearch {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    color: #333;
 }
