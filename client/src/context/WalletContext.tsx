@@ -6,7 +6,7 @@ import {
   useEffect,
   type ReactNode,
 } from "react";
-import { createPublicClient, formatUnits, type Address } from "viem";
+import { createPublicClient, formatUnits, parseGwei, type Address } from "viem";
 import { arcTestnet } from "viem/chains";
 import { createBundlerClient } from "viem/account-abstraction";
 import { toWebAuthnAccount } from "viem/account-abstraction";
@@ -86,6 +86,12 @@ export function WalletProvider({ children }: { children: ReactNode }) {
           account: smartAccount,
           chain: arcTestnet,
           transport: modularTransport,
+          userOperation: {
+            estimateFeesPerGas: async () => ({
+              maxFeePerGas: parseGwei("50"),
+              maxPriorityFeePerGas: parseGwei("2"),
+            }),
+          },
         });
 
         const address = smartAccount.address;
