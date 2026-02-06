@@ -55,12 +55,16 @@
     outline: none;
 }
 
-.iconButton, .filterButton {
+.iconButton {
     background: none;
     border: none;
     cursor: pointer;
     display: flex;
     align-items: center;
+}
+
+.filterButton {
+    background-color: #3B82F6;
 }
 
 .logo {
