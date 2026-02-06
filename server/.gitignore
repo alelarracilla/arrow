@@ -1,2 +1,15 @@
 # node modules
 node_modules
+
+
+# dist
+dist
+
+# .env
+.env
+.env.*
+
+# db
+*.db
+*.db-wal
+*.db-shm
