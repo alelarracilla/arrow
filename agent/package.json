@@ -1,0 +1,22 @@
+{
+  "name": "arrow-agent",
+  "version": "1.0.0",
+  "description": "Off-chain agent that monitors Uniswap v4 pools and executes limit orders + copy-trades",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "nodemon --exec ts-node src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.73.0",
+    "dotenv": "^17.2.4",
+    "viem": "^2.31.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.1",
+    "nodemon": "^3.1.11",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
