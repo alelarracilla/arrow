@@ -1,6 +1,8 @@
 .newsSection {
     background-color: #1e1e1e;
     padding: 16px;
+    position: relative;
+    margin-bottom: 100px;
 }
 
 .title {

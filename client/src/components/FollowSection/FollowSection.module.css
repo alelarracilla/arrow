@@ -1,6 +1,6 @@
 .container {
-    margin-top: 70px;
     padding: 16px;
+    position: relative;
 }
 .title {
     color: #fff;
