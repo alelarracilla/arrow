@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import { createPublicClient, formatUnits, type Address } from "viem";
-import { polygonAmoy } from "viem/chains";
+import { arcTestnet } from "viem/chains";
 import { createBundlerClient } from "viem/account-abstraction";
 import { toWebAuthnAccount } from "viem/account-abstraction";
 import {
@@ -21,25 +21,13 @@ import {
 const CLIENT_KEY = import.meta.env.VITE_CIRCLE_CLIENT_KEY;
 const CLIENT_URL = import.meta.env.VITE_CIRCLE_CLIENT_URL;
 
-// USDC on Polygon Amoy
-const USDC_ADDRESS = "0x41E94Eb019C0762f9Bfcf9Fb1E58725BfB0e7582" as const;
-const USDC_DECIMALS = 6;
-
-const ERC20_BALANCE_ABI = [
-  {
-    inputs: [{ name: "account", type: "address" }],
-    name: "balanceOf",
-    outputs: [{ name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-] as const;
+// Arc Testnet: USDC is the native currency (18 decimals)
+const NATIVE_USDC_DECIMALS = 18;
 
 interface WalletState {
   isConnected: boolean;
   isLoading: boolean;
   address: Address | null;
-  nativeBalance: string;
   usdcBalance: string;
   smartAccount: ReturnType<typeof toCircleSmartAccount> extends Promise<infer T> ? T | null : never;
   bundlerClient: ReturnType<typeof createBundlerClient> | null;
@@ -68,7 +56,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     isConnected: false,
     isLoading: false,
     address: null,
-    nativeBalance: "0",
     usdcBalance: "0",
     smartAccount: null,
     bundlerClient: null,
@@ -81,12 +68,12 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
       try {
         const modularTransport = toModularTransport(
-          `${CLIENT_URL}/polygonAmoy`,
+          `${CLIENT_URL}/arcTestnet`,
           CLIENT_KEY
         );
 
         const publicClient = createPublicClient({
-          chain: polygonAmoy,
+          chain: arcTestnet,
           transport: modularTransport,
         });
 
@@ -97,29 +84,20 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
         const bundlerClient = createBundlerClient({
           account: smartAccount,
-          chain: polygonAmoy,
+          chain: arcTestnet,
           transport: modularTransport,
         });
 
         const address = smartAccount.address;
 
-        // Fetch balances
-        const [nativeBal, usdcBal] = await Promise.all([
-          publicClient.getBalance({ address }),
-          publicClient.readContract({
-            address: USDC_ADDRESS,
-            abi: ERC20_BALANCE_ABI,
-            functionName: "balanceOf",
-            args: [address],
-          }),
-        ]);
+        // On Arc Testnet, USDC is the native currency
+        const usdcBal = await publicClient.getBalance({ address });
 
         setState({
           isConnected: true,
           isLoading: false,
           address,
-          nativeBalance: formatUnits(nativeBal, 18),
-          usdcBalance: formatUnits(usdcBal, USDC_DECIMALS),
+          usdcBalance: formatUnits(usdcBal, NATIVE_USDC_DECIMALS),
           smartAccount,
           bundlerClient,
           error: null,
@@ -188,7 +166,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       isConnected: false,
       isLoading: false,
       address: null,
-      nativeBalance: "0",
       usdcBalance: "0",
       smartAccount: null,
       bundlerClient: null,
@@ -201,28 +178,19 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
     try {
       const modularTransport = toModularTransport(
-        `${CLIENT_URL}/polygonAmoy`,
+        `${CLIENT_URL}/arcTestnet`,
         CLIENT_KEY
       );
       const publicClient = createPublicClient({
-        chain: polygonAmoy,
+        chain: arcTestnet,
         transport: modularTransport,
       });
 
-      const [nativeBal, usdcBal] = await Promise.all([
-        publicClient.getBalance({ address: state.address }),
-        publicClient.readContract({
-          address: USDC_ADDRESS,
-          abi: ERC20_BALANCE_ABI,
-          functionName: "balanceOf",
-          args: [state.address],
-        }),
-      ]);
+      const usdcBal = await publicClient.getBalance({ address: state.address });
 
       setState((s) => ({
         ...s,
-        nativeBalance: formatUnits(nativeBal, 18),
-        usdcBalance: formatUnits(usdcBal, USDC_DECIMALS),
+        usdcBalance: formatUnits(usdcBal, NATIVE_USDC_DECIMALS),
       }));
     } catch (err) {
       console.error("Balance refresh error:", err);
