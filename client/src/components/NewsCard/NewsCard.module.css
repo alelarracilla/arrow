@@ -1,47 +1,143 @@
 /* NewsCard.module.css */
 
 .newsCard {
-    border-radius: 0.5rem; /* rounded-lg */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-lg */
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     background-color: #10141B;
+    margin-bottom: 1rem;
+}
+
+.newsCardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem 0;
+}
+
+.newsCardPair {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pairLabel {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.pairIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background-color: #16F2A5;
+    color: #10141B;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.authorInfo {
+    display: flex;
+    align-items: center;
+}
+
+.authorAvatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.authorAvatarFallback {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #16F2A5, #3182CE);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #fff;
 }
 
 .newsCardImage {
-    width: 100%; /* w-full */
-    height: 12rem; /* h-48 */
-    object-fit: cover; /* object-cover */
+    width: 100%;
+    height: 12rem;
+    object-fit: cover;
 }
 
 .newsCardContent {
-    padding: 1rem; /* p-4 */
+    padding: 1rem;
 }
 
 .newsCardTitle {
-    font-size: 1.25rem; /* text-xl */
-    font-weight: bold; /* font-bold */
-    margin-bottom: 0.5rem; /* mb-2 */
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
     display: flex;
     align-items: center;
-    gap: 0.5rem; /* gap-2 */
+    gap: 0.5rem;
+}
+
+.leaderBadge {
+    font-size: 0.6rem;
+    background-color: #16F2A5;
+    color: #10141B;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.newsCardTime {
+    font-size: 0.75rem;
+    color: #4A5568;
+    display: block;
+    margin-bottom: 0.4rem;
 }
 
 .newsCardDescription {
-    color: #4A5568; /* text-gray-600 */
-    font-size: 0.875rem; /* text-sm */
-    margin-bottom: 1rem; /* mb-4 */
+    color: #9CA3AF;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.newsCardActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
 }
 
 .newsCardButton {
-    background-color: #16F2A5; /* bg-blue-500 */
-    color: white; /* text-white */
-    font-weight: 600; /* font-semibold */
-    padding: 0.5rem 1rem; /* py-2 px-4 */
-    border-radius: 0.25rem; /* rounded */
-    float: right;
-    margin-bottom: 20px;
+    background-color: #16F2A5;
+    color: #10141B;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
 }
 
 .newsCardButton:hover {
-    background-color: #3182CE; /* hover:bg-blue-600 */
+    background-color: #12D990;
+}
+
+.newsCardSecondaryButton {
+    background: transparent;
+    border: 1px solid #4A5568;
+    color: #D1D5DB;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.newsCardSecondaryButton:hover {
+    border-color: #16F2A5;
+    color: #16F2A5;
 }

@@ -11,3 +11,10 @@
     margin-bottom: 12px;
     font-weight: 600;
 }
+
+.empty {
+    color: #4A5568;
+    text-align: center;
+    padding: 2rem 0;
+    font-size: 0.9rem;
+}

@@ -1,0 +1,180 @@
+.container {
+  position: fixed;
+  bottom: 5rem;
+  right: 1rem;
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 360px;
+  width: 100%;
+}
+
+.card {
+  background: #10141B;
+  border: 1px solid #1F2937;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.typeBadge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.copyTrade {
+  background: rgba(22, 242, 165, 0.15);
+  color: #16F2A5;
+}
+
+.limitOrder {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3B82F6;
+}
+
+.aiSuggestion {
+  background: rgba(168, 85, 247, 0.15);
+  color: #A855F7;
+}
+
+.urgencyHigh {
+  border-left: 3px solid #EF4444;
+}
+
+.urgencyMedium {
+  border-left: 3px solid #F59E0B;
+}
+
+.urgencyLow {
+  border-left: 3px solid #6B7280;
+}
+
+.timer {
+  font-size: 0.7rem;
+  color: #6B7280;
+}
+
+.direction {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 0.25rem;
+}
+
+.dirBuy {
+  color: #16F2A5;
+}
+
+.dirSell {
+  color: #EF4444;
+}
+
+.amount {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.35rem;
+}
+
+.leader {
+  font-size: 0.75rem;
+  color: #9CA3AF;
+  margin-bottom: 0.35rem;
+}
+
+.aiInfo {
+  font-size: 0.75rem;
+  color: #6B7280;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.confidence {
+  color: #16F2A5;
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.approveBtn {
+  flex: 1;
+  padding: 0.55rem;
+  border-radius: 6px;
+  border: none;
+  background-color: #16F2A5;
+  color: #10141B;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.approveBtn:hover {
+  background-color: #12D990;
+}
+
+.approveBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.rejectBtn {
+  padding: 0.55rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #374151;
+  background: transparent;
+  color: #9CA3AF;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.rejectBtn:hover {
+  border-color: #EF4444;
+  color: #EF4444;
+}
+
+.successMsg {
+  color: #16F2A5;
+  font-size: 0.8rem;
+  text-align: center;
+  font-weight: 600;
+  padding: 0.25rem 0;
+}
+
+.errorMsg {
+  color: #EF4444;
+  font-size: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.empty {
+  display: none;
+}

@@ -1,0 +1,185 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal {
+  background: #10141B;
+  border-radius: 0.75rem;
+  width: 100%;
+  max-width: 400px;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #1F2937;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: #9CA3AF;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.closeBtn:hover {
+  color: #fff;
+}
+
+.body {
+  padding: 1rem;
+}
+
+.presets {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.presetBtn {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #1F2937;
+  background: transparent;
+  color: #9CA3AF;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.presetBtn:hover {
+  border-color: #16F2A5;
+  color: #16F2A5;
+}
+
+.presetActive {
+  background-color: #16F2A5;
+  color: #10141B;
+  border-color: #16F2A5;
+}
+
+.field {
+  margin-bottom: 1rem;
+}
+
+.label {
+  display: block;
+  font-size: 0.8rem;
+  color: #9CA3AF;
+  margin-bottom: 0.35rem;
+  font-weight: 500;
+}
+
+.input {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #1F2937;
+  background: #0D1117;
+  color: #fff;
+  font-size: 0.9rem;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  border-color: #16F2A5;
+}
+
+.error {
+  color: #EF4444;
+  font-size: 0.8rem;
+  margin-bottom: 0.75rem;
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 0.7rem;
+  border-radius: 6px;
+  border: none;
+  background-color: #16F2A5;
+  color: #10141B;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.submitBtn:hover {
+  background-color: #12D990;
+}
+
+.submitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.successBlock {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.successIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #16F2A5;
+  color: #10141B;
+  font-size: 1.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.75rem;
+}
+
+.successText {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+}
+
+.txHash {
+  color: #4A5568;
+  font-size: 0.75rem;
+  margin: 0 0 1rem;
+  font-family: monospace;
+}
+
+.doneBtn {
+  padding: 0.5rem 2rem;
+  border-radius: 6px;
+  border: 1px solid #1F2937;
+  background: transparent;
+  color: #D1D5DB;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.doneBtn:hover {
+  border-color: #16F2A5;
+}
