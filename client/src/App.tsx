@@ -26,9 +26,10 @@ function App() {
   return (
     <BrowserRouter>
       <div>
+        <SearchBar />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/perfil" element={<Profile />} /> 
+          <Route path="/profile" element={<Profile />} /> 
         </Routes>
 
         {/* El NavBar se queda fuera de Routes para que sea persistente en todas las páginas */}

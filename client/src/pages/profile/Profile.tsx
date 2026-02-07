@@ -1,9 +1,9 @@
-import { SearchBar } from "../../components/SearchBar/SearchBar"
+import { ProfileHeader } from "../../components/ProfileHeader/ProfileHeader"
 
 export const Profile = () => {
   return (
     <div>
-        <SearchBar />
+        <ProfileHeader />
     </div>
   )
 }
