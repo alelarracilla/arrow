@@ -105,6 +105,10 @@ db.exec(`
 
 // Migrations
 try { db.exec("ALTER TABLE users ADD COLUMN ens_name TEXT DEFAULT ''"); } catch { /* column already exists */ }
+try { db.exec("ALTER TABLE posts ADD COLUMN post_type TEXT DEFAULT 'post'"); } catch { /* column already exists */ }
+try { db.exec("ALTER TABLE posts ADD COLUMN side TEXT DEFAULT ''"); } catch { /* column already exists */ }
+try { db.exec("ALTER TABLE posts ADD COLUMN price TEXT DEFAULT ''"); } catch { /* column already exists */ }
+try { db.exec("ALTER TABLE posts ADD COLUMN agent_processed INTEGER DEFAULT 0"); } catch { /* column already exists */ }
 
 db.exec(`
   CREATE INDEX IF NOT EXISTS idx_posts_author ON posts(author_id);

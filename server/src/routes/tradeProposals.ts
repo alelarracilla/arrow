@@ -5,11 +5,10 @@ import { authRequired } from "../middleware/auth";
 
 const router = Router();
 
-const AGENT_SECRET = process.env.AGENT_SECRET || "arrow-agent-secret";
-
 // Agent creates a trade proposal ──
 
 router.post("/", (req: Request, res: Response): void => {
+  const AGENT_SECRET = process.env.AGENT_SECRET || "arrow-agent-secret";
   const agentKey = req.headers["x-agent-secret"];
   if (agentKey !== AGENT_SECRET) {
     res.status(403).json({ error: "Invalid agent secret" });
@@ -122,6 +121,7 @@ router.patch("/:id/approve", authRequired, (req: Request, res: Response): void =
   db.prepare("UPDATE trade_proposals SET status = 'approved' WHERE id = ?").run(req.params.id);
 
   const updated = db.prepare("SELECT * FROM trade_proposals WHERE id = ?").get(req.params.id);
+  console.log(`[proposal] APPROVED #${req.params.id.slice(0,8)} | ${proposal.type} | ${proposal.zero_for_one ? 'SELL' : 'BUY'} ${proposal.amount} | user=${userAddress.slice(0,10)}`);
   res.json({ proposal: updated });
 });
 
@@ -147,6 +147,7 @@ router.patch("/:id/executed", authRequired, (req: Request, res: Response): void 
   );
 
   const updated = db.prepare("SELECT * FROM trade_proposals WHERE id = ?").get(req.params.id);
+  console.log(`[proposal] EXECUTED #${req.params.id.slice(0,8)} | tx=${tx_hash?.slice(0,14) || 'none'} | user=${userAddress.slice(0,10)}`);
   res.json({ proposal: updated });
 });
 
@@ -174,6 +175,7 @@ router.patch("/:id/reject", authRequired, (req: Request, res: Response): void =>
   db.prepare("UPDATE trade_proposals SET status = 'rejected' WHERE id = ?").run(req.params.id);
 
   const updated = db.prepare("SELECT * FROM trade_proposals WHERE id = ?").get(req.params.id);
+  console.log(`[proposal] REJECTED #${req.params.id.slice(0,8)} | user=${userAddress.slice(0,10)}`);
   res.json({ proposal: updated });
 });
 

@@ -3,35 +3,6 @@ import styles from "./SetOrderModal.module.css";
 import type { Post } from "../../api/client";
 import { useWallet } from "../../context/WalletContext";
 import { recordOrder } from "../../api/client";
-import { parseEther, type Address } from "viem";
-
-const HOOK_ADDRESS = (import.meta.env.VITE_HOOK_ADDRESS || "") as Address;
-
-// placeLimitOrder ABI from ArrowCopyTradeHook
-const PLACE_LIMIT_ORDER_ABI = [
-  {
-    name: "placeLimitOrder",
-    type: "function",
-    stateMutability: "nonpayable",
-    inputs: [
-      {
-        name: "key",
-        type: "tuple",
-        components: [
-          { name: "currency0", type: "address" },
-          { name: "currency1", type: "address" },
-          { name: "fee", type: "uint24" },
-          { name: "tickSpacing", type: "int24" },
-          { name: "hooks", type: "address" },
-        ],
-      },
-      { name: "zeroForOne", type: "bool" },
-      { name: "amountSpecified", type: "int256" },
-      { name: "triggerPrice", type: "uint160" },
-    ],
-    outputs: [{ name: "orderId", type: "uint256" }],
-  },
-] as const;
 
 interface SetOrderModalProps {
   post: Post;
@@ -45,7 +16,7 @@ export const SetOrderModal: React.FC<SetOrderModalProps> = ({ post, onClose }) =
   const [direction, setDirection] = useState<"buy" | "sell">("buy");
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [error, setError] = useState("");
-  const [txHash, setTxHash] = useState("");
+  const [txHash] = useState("");
 
   const handleSubmit = async () => {
     if (!amount || !triggerPrice) {
@@ -62,71 +33,34 @@ export const SetOrderModal: React.FC<SetOrderModalProps> = ({ post, onClose }) =
     setError("");
 
     try {
-      const amountWei = parseEther(amount);
-      const triggerPriceWei = parseEther(triggerPrice);
+      console.log(`[order] Placing ${direction.toUpperCase()} order: ${amount} USDC @ ${triggerPrice} for ${post.pair}`);
+      console.log(`[order] Pair: ${post.pair_address_0} / ${post.pair_address_1} (fee: ${post.pool_fee})`);
 
-      // Build the PoolKey from post metadata
-      const poolKey = {
-        currency0: post.pair_address_0 as Address,
-        currency1: post.pair_address_1 as Address,
-        fee: post.pool_fee,
-        tickSpacing: 60, // standard for 3000 fee tier
-        hooks: HOOK_ADDRESS,
-      };
+      // Compute pool key hash for backend tracking
+      const encoder = new TextEncoder();
+      const data = encoder.encode(
+        `${post.pair_address_0}:${post.pair_address_1}:${post.pool_fee}`
+      );
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const poolKeyHash = `0x${hashArray.map((b) => b.toString(16).padStart(2, "0")).join("")}`;
 
-      if (HOOK_ADDRESS) {
-        // On-chain: call placeLimitOrder on the hook contract via Circle smart account
-        const hash = await bundlerClient.sendUserOperation({
-          calls: [
-            {
-              to: HOOK_ADDRESS,
-              abi: PLACE_LIMIT_ORDER_ABI,
-              functionName: "placeLimitOrder",
-              args: [poolKey, direction === "buy", amountWei, triggerPriceWei],
-            },
-          ],
-        });
+      // Record order in backend — the agent monitors and executes via CCTP bridge + Uniswap v4
+      // Hook is on Base Sepolia, so direct on-chain calls from Arc need bridging first
+      console.log(`[order] Recording in backend (pool_key_hash: ${poolKeyHash.slice(0, 14)}...)`);
+      const result = await recordOrder({
+        post_id: post.id,
+        pool_key_hash: poolKeyHash,
+        zero_for_one: direction === "buy",
+        amount,
+        trigger_price: triggerPrice,
+      });
 
-        setTxHash(hash);
-
-        // Also record in backend for the agent to track
-        const encoder = new TextEncoder();
-        const data = encoder.encode(
-          `${post.pair_address_0}:${post.pair_address_1}:${post.pool_fee}`
-        );
-        const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const poolKeyHash = `0x${hashArray.map((b) => b.toString(16).padStart(2, "0")).join("")}`;
-
-        await recordOrder({
-          post_id: post.id,
-          pool_key_hash: poolKeyHash,
-          zero_for_one: direction === "buy",
-          amount,
-          trigger_price: triggerPrice,
-        });
-      } else {
-        // Hook not deployed yet — record in backend only, agent will handle
-        const encoder = new TextEncoder();
-        const data = encoder.encode(
-          `${post.pair_address_0}:${post.pair_address_1}:${post.pool_fee}`
-        );
-        const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const poolKeyHash = `0x${hashArray.map((b) => b.toString(16).padStart(2, "0")).join("")}`;
-
-        await recordOrder({
-          post_id: post.id,
-          pool_key_hash: poolKeyHash,
-          zero_for_one: direction === "buy",
-          amount,
-          trigger_price: triggerPrice,
-        });
-      }
-
+      console.log(`[order] Created:`, result);
       setStatus("success");
       setTimeout(onClose, 1500);
     } catch (err) {
+      console.error("[order] Failed:", err);
       setError(err instanceof Error ? err.message : "Failed to place order");
       setStatus("error");
     }

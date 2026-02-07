@@ -9,48 +9,14 @@ import {
   confirmProposalExecuted,
   type TradeProposal,
 } from "../../api/client";
-import { parseEther, type Address } from "viem";
+import { buildBridgeToBaseSepoliaCalls } from "../../lib/cctp";
+import type { Address } from "viem";
 
-const SWAP_ROUTER_ADDRESS = (import.meta.env.VITE_SWAP_ROUTER_ADDRESS || "") as Address;
-const HOOK_ADDRESS = (import.meta.env.VITE_HOOK_ADDRESS || "") as Address;
 
+
+// sorry for this mess, Ale lol
+// needed to test my stuff
 const POLL_INTERVAL = 10_000;
-
-const SWAP_ROUTER_ABI = [
-  {
-    name: "swap",
-    type: "function",
-    stateMutability: "payable",
-    inputs: [
-      {
-        name: "key",
-        type: "tuple",
-        components: [
-          { name: "currency0", type: "address" },
-          { name: "currency1", type: "address" },
-          { name: "fee", type: "uint24" },
-          { name: "tickSpacing", type: "int24" },
-          { name: "hooks", type: "address" },
-        ],
-      },
-      {
-        name: "params",
-        type: "tuple",
-        components: [
-          { name: "zeroForOne", type: "bool" },
-          { name: "amountSpecified", type: "int256" },
-          { name: "sqrtPriceLimitX96", type: "uint160" },
-        ],
-      },
-      { name: "testSettings", type: "bytes" },
-    ],
-    outputs: [{ name: "delta", type: "int256" }],
-  },
-] as const;
-
-// sqrtPriceX96 limits for max slippage
-const MIN_SQRT_PRICE = BigInt("4295128739") + 1n;
-const MAX_SQRT_PRICE = BigInt("1461446703485210103287273052203988822378723970342") - 1n;
 
 interface ProposalCardProps {
   proposal: TradeProposal;
@@ -85,50 +51,44 @@ function ProposalCard({ proposal, onAction }: ProposalCardProps) {
     setError("");
 
     try {
+      console.log(`[proposal] Approving #${proposal.id.slice(0, 8)}...`);
+      console.log(`[proposal] Type: ${proposal.type} | ${proposal.zero_for_one ? "SELL" : "BUY"} ${proposal.amount} USDC`);
+
       // Step 1: Mark as approved in backend
       await approveProposal(proposal.id);
+      console.log(`[proposal] Backend approved`);
 
-      // Step 2: Build and sign the swap tx with the user's passkey
-      const amountWei = parseEther(proposal.amount);
-      const zeroForOne = !!proposal.zero_for_one;
+      // Step 2: Bridge USDC from Arc to Base Sepolia via CCTP
+      // The user's smart account on Arc burns USDC, Circle attests, agent mints + swaps on Base Sepolia
+      const userAddress = bundlerClient.account?.address;
+      if (!userAddress) throw new Error("No wallet address");
 
-      if (SWAP_ROUTER_ADDRESS && HOOK_ADDRESS) {
-        const poolKey = {
-          currency0: (proposal.token0 || "0x0000000000000000000000000000000000000000") as Address,
-          currency1: (proposal.token1 || "0x0000000000000000000000000000000000000000") as Address,
-          fee: proposal.pool_fee || 3000,
-          tickSpacing: 60,
-          hooks: HOOK_ADDRESS,
-        };
+      console.log(`[bridge] Building CCTP bridge calls: ${proposal.amount} USDC Arc -> Base Sepolia`);
+      console.log(`[bridge] Recipient on Base Sepolia: ${userAddress}`);
 
-        const swapParams = {
-          zeroForOne,
-          amountSpecified: -amountWei, // negative = exact input
-          sqrtPriceLimitX96: zeroForOne ? MIN_SQRT_PRICE : MAX_SQRT_PRICE,
-        };
+      const calls = buildBridgeToBaseSepoliaCalls({
+        amount: proposal.amount,
+        recipientOnBaseSepolia: userAddress as Address,
+        useForwardingService: true, // gasless mint on Base Sepolia
+        maxFee: "0.50",
+      });
 
-        const hash = await bundlerClient.sendUserOperation({
-          calls: [
-            {
-              to: SWAP_ROUTER_ADDRESS,
-              abi: SWAP_ROUTER_ABI,
-              functionName: "swap",
-              args: [poolKey, swapParams, "0x"],
-            },
-          ],
-        });
+      console.log(`[bridge] Sending ${calls.length} calls via bundlerClient (approve + burn)...`);
 
-        // Step 3: Confirm execution in backend
-        await confirmProposalExecuted(proposal.id, hash);
-        setStatus("success");
-      } else {
-        // Contracts not deployed — just mark approved for demo
-        setStatus("success");
-      }
+      const hash = await bundlerClient.sendUserOperation({ calls });
 
+      console.log(`[bridge] UserOp submitted: ${hash}`);
+      console.log(`[bridge] USDC burned on Arc. Waiting for CCTP attestation (~0.5s)...`);
+      console.log(`[bridge] Agent will mint on Base Sepolia + execute Uniswap v4 swap`);
+
+      // Step 3: Confirm execution in backend with the Arc burn tx hash
+      await confirmProposalExecuted(proposal.id, hash);
+      console.log(`[proposal] Marked as executed in backend`);
+
+      setStatus("success");
       setTimeout(onAction, 1500);
     } catch (err) {
-      console.error("Trade approval error:", err);
+      console.error("[proposal] Approval error:", err);
       setError(err instanceof Error ? err.message : "Failed to sign transaction");
       setStatus("error");
     }

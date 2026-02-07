@@ -21,7 +21,8 @@
         "test:client": "npm --workspace client run test",
         "test:agent": "npm --workspace agent run test",
         "test:watch": "npm --workspace server run test:watch",
-        "seed": "npm --workspace server run seed"
+        "seed": "npm --workspace server run seed",
+        "seed:reset": "npm --workspace server run seed -- --reset"
     },
     "dependencies": {
         "concurrently": "^9.0.1",
