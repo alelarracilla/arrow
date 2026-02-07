@@ -1,0 +1,71 @@
+.card {
+  background-color: #0d1117;
+  border-radius: 12px;
+  padding: 16px;
+  max-width: 500px;
+  margin-top: 20px;
+  color: #e6edf3;
+  font-family: -apple-system, sans-serif;
+  border: 1px solid #30363d;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.miniAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #58a6ff;
+}
+
+.userName {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.date {
+  color: #8b949e;
+  font-size: 14px;
+}
+
+.content {
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  color: #d1d7e0;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+}
+
+.leftIcons, .rightIcons {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+.icon {
+  font-size: 20px;
+  color: #f0f6fc;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.icon:hover {
+  color: #1f6feb;
+}

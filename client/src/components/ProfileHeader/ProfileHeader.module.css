@@ -1,5 +1,5 @@
 .container {
-  background-color: #0d1117; /* Fondo oscuro tipo GitHub/TradingView */
+  background-color: #0d1117;
   color: white;
   padding: 20px;
   max-width: 500px;
@@ -13,10 +13,10 @@
   margin-bottom: 20px;
 }
 
-/* Avatar y Badge .eth */
 .avatarWrapper {
   position: relative;
   flex-shrink: 0;
+  margin-right: 15px;
 }
 
 .avatar {
@@ -28,10 +28,10 @@
 
 .ensBadge {
   position: absolute;
-  bottom: -10px;
+  margin-top: -10px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #6b7280; /* Gris azulado del badge */
+  background-color: #6b7280;
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 12px;
@@ -41,7 +41,6 @@
   gap: 4px;
 }
 
-/* Sección de Texto y Stats */
 .infoSection {
   flex-grow: 1;
 }
@@ -60,7 +59,7 @@
 }
 
 .verifiedBadge {
-  background-color: #00ff88; /* Verde brillante */
+  background-color: #00ff88;
   color: #000;
   border-radius: 50%;
   width: 18px;
@@ -100,7 +99,6 @@
   margin: 0;
 }
 
-/* Botones */
 .buttonGroup {
   display: flex;
   gap: 12px;
@@ -108,8 +106,8 @@
 
 .btnPrimary {
   flex: 1;
-  background-color: #164e33; /* Verde oscuro de tu captura */
-  color: #98ff98; /* Texto verde claro */
+  background-color: #164e33;
+  color: #98ff98;
   border: none;
   padding: 10px;
   border-radius: 8px;

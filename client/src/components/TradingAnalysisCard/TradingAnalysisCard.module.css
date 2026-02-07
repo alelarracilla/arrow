@@ -1,0 +1,168 @@
+.card {
+  background-color: #0d1117;
+  border-radius: 12px;
+  padding: 16px;
+  max-width: 500px;
+  color: #e6edf3;
+  font-family: -apple-system, sans-serif;
+  border: 1px solid #30363d;
+  margin-top: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.miniAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #58a6ff;
+}
+
+.userName {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.date {
+  color: #8b949e;
+  font-size: 14px;
+}
+
+/* Sección del Gráfico */
+.chartContainer {
+  background-color: #12151b; /* Fondo del área del gráfico */
+  border-radius: 8px;
+  padding: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.chartInfoBar {
+  font-size: 12px;
+  color: #8b949e;
+  margin-bottom: 10px;
+}
+
+.volumeValue {
+  font-weight: bold;
+  color: #d1d7e0;
+}
+
+.cryptoHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.cryptoLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cryptoLogo {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.cryptoSymbol {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.trendingBadge {
+  background-color: #008060;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trendingIcon {
+  font-size: 18px;
+  color: #00ff88;
+}
+
+/* Wrapper para la imagen del gráfico y sus overlays */
+.chartWrapper {
+  position: relative;
+  width: 100%;
+  height: 200px; /* Ajusta la altura de la imagen del gráfico */
+}
+
+.chartImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Asegura que la imagen cubra el área sin distorsionarse */
+  display: block; /* Elimina el espacio extra debajo de la imagen */
+  border-radius: 4px;
+}
+
+/* Elementos de superposición (textos sobre la imagen) */
+.priceOverlayTop {
+  position: absolute;
+  top: 5px; /* Ajusta según dónde esté el texto en tu imagen */
+  left: 5px; /* Ajusta según dónde esté el texto en tu imagen */
+  font-size: 12px;
+  color: #e6edf3;
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.redBox {
+  position: absolute;
+  bottom: 8px; /* Ajusta según la posición en tu imagen */
+  left: 10px; /* Ajusta según la posición en tu imagen */
+  background-color: #e53e3e; /* Rojo de tu captura */
+  color: white;
+  padding: 4px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.redBoxPrice {
+  font-weight: bold;
+}
+
+.redBoxTime {
+  opacity: 0.8;
+}
+
+/* Estilos para los recuadros amarillos */
+.yellowBox1, .yellowBox2 {
+  position: absolute;
+  background-color: #f7b731; /* Amarillo */
+  color: #333; /* Texto oscuro para contraste */
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.yellowBox1 {
+  bottom: 40px; /* Ajusta estas posiciones según tu imagen */
+  left: 10px;
+}
+
+.yellowBox2 {
+  bottom: 10px; /* Ajusta estas posiciones según tu imagen */
+  left: 10px;
+}

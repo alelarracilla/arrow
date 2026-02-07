@@ -1,4 +1,5 @@
 import styles from './ProfileHeader.module.css';
+import profileImg from '../../assets/profile.png';
 
 export const ProfileHeader = () => {
   const profileData = {
@@ -8,21 +9,19 @@ export const ProfileHeader = () => {
     ideas: "1.2k",
     following: "1k",
     bio: "Love Crypto Space, be part of the best trading club.",
-    avatarUrl: "/path-to-your-avatar.png" // Reemplaza con tu imagen
+    avatarUrl: "/path-to-your-avatar.png"
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.topSection}>
-        {/* Avatar con el badge de ENS (.eth) */}
         <div className={styles.avatarWrapper}>
-          <img src={profileData.avatarUrl} alt="Avatar" className={styles.avatar} />
+          <img src={profileImg} alt="Avatar" className={styles.avatar} />
           <div className={styles.ensBadge}>
             <span className={styles.ensIcon}>◇</span> {profileData.username}
           </div>
         </div>
 
-        {/* Info de Usuario y Stats */}
         <div className={styles.infoSection}>
           <div className={styles.headerRow}>
             <h2 className={styles.name}>{profileData.name}</h2>
@@ -48,7 +47,6 @@ export const ProfileHeader = () => {
         </div>
       </div>
 
-      {/* Botones de Acción */}
       <div className={styles.buttonGroup}>
         <button className={styles.btnPrimary}>Edit profile</button>
         <button className={styles.btnPrimary}>Share profile</button>

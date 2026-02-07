@@ -31,8 +31,6 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/profile" element={<Profile />} /> 
         </Routes>
-
-        {/* El NavBar se queda fuera de Routes para que sea persistente en todas las páginas */}
         <NavBar />
       </div>
     </BrowserRouter>
