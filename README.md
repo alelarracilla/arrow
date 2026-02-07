@@ -11,7 +11,8 @@ arrow/
 ├── client/          React + Vite + TailwindCSS + Circle Modular Wallets SDK
 ├── server/          Express + SQLite (better-sqlite3) REST API
 ├── agent/           AI trading agent (Anthropic Claude + viem + CCTP bridge)
-└── contracts/       Solidity (Foundry) — Uniswap v4 hook + tipping
+├── contracts/       Solidity (Foundry) — Uniswap v4 hook + tipping
+└── scripts/         Deployment scripts (Railway, Vercel)
 ```
 
 ### Cross-Chain Swap Flow
@@ -53,13 +54,13 @@ arrow/
 
 | Contract | Arc Testnet | Base Sepolia |
 | --- | --- | --- |
-| **USDC** | `0x3600...0000` | `0x036CbD...3dCF7e` |
-| **TokenMessengerV2** | `0x8FE6B9...42DAA` | `0x8FE6B9...42DAA` |
-| **MessageTransmitterV2** | `0xE737e5...CE275` | `0xE737e5...CE275` |
+| **USDC** | [`0x3600...0000`](https://testnet.arcscan.app/address/0x3600000000000000000000000000000000000000) | [`0x036CbD...3dCF7e`](https://base-sepolia.blockscout.com/address/0x036CbD53842c5426634e7929541eC2318f3dCF7e) |
+| **TokenMessengerV2** | [`0x8FE6B9...42DAA`](https://testnet.arcscan.app/address/0x8FE6B999Dc680CcFDD5Bf7EB0974218be2542DAA) | [`0x8FE6B9...42DAA`](https://base-sepolia.blockscout.com/address/0x8FE6B999Dc680CcFDD5Bf7EB0974218be2542DAA) |
+| **MessageTransmitterV2** | [`0xE737e5...CE275`](https://testnet.arcscan.app/address/0xE737e5cEBEEBa77EFE34D4aa090756590b1CE275) | [`0xE737e5...CE275`](https://base-sepolia.blockscout.com/address/0xE737e5cEBEEBa77EFE34D4aa090756590b1CE275) |
 | **CCTP Domain** | 26 | 6 |
-| **PoolManager** | — | `0x05E733...03408` |
-| **PoolSwapTest** | — | `0x8b5bcc...3b9` |
-| **Permit2** | `0x00002...8BA3` | `0x00002...8BA3` |
+| **PoolManager** | — | [`0x05E733...03408`](https://base-sepolia.blockscout.com/address/0x05E73354cFDd6745C338b50BcFDfA3Aa6fA03408) |
+| **PoolSwapTest** | — | [`0x8b5bcc...3b9`](https://base-sepolia.blockscout.com/address/0x8b5bcc363dde2614281ad875bad385e0a785d3b9) |
+| **Permit2** | [`0x00002...8BA3`](https://testnet.arcscan.app/address/0x000000000022D473030F116dDEE9F6B43aC78BA3) | [`0x00002...8BA3`](https://base-sepolia.blockscout.com/address/0x000000000022D473030F116dDEE9F6B43aC78BA3) |
 
 Tips flow directly on Arc: user signs a `tip()` call on `ArrowTipping` via their Circle smart account. Native USDC is sent to the creator minus a configurable platform fee.
 
@@ -396,7 +397,7 @@ Proposals are only created when `action === "execute"` and `confidence >= 0.5`.
 | -------- | ----- | ----- |
 | **Chain ID** | `5042002` | `84532` |
 | **RPC** | `https://rpc.testnet.arc.network` | `https://sepolia.base.org` |
-| **Explorer** | [arcscan.app](https://testnet.arcscan.app) | [basescan.org](https://sepolia.basescan.org) |
+| **Explorer** | [Arcscan](https://testnet.arcscan.app) | [Blockscout](https://base-sepolia.blockscout.com) |
 | **Native Currency** | USDC (18 decimals) | ETH |
 | **USDC** | `0x3600...0000` (native) | `0x036CbD...3dCF7e` (ERC-20) |
 | **CCTP Domain** | 26 | 6 |
@@ -408,23 +409,23 @@ Proposals are only created when `action === "execute"` and `confidence >= 0.5`.
 
 | Contract | Address |
 | -------- | ------- |
-| **ArrowTipping** | `0xDe4b20f3ea6D7C24bbbAa1dfea741b86B3B628da` |
-| **CCTP TokenMessengerV2** | `0x8FE6B999Dc680CcFDD5Bf7EB0974218be2542DAA` |
-| **CCTP MessageTransmitterV2** | `0xE737e5cEBEEBa77EFE34D4aa090756590b1CE275` |
-| **Permit2** | `0x000000000022D473030F116dDEE9F6B43aC78BA3` |
+| **ArrowTipping** | [`0xDe4b20f3ea6D7C24bbbAa1dfea741b86B3B628da`](https://testnet.arcscan.app/address/0xDe4b20f3ea6D7C24bbbAa1dfea741b86B3B628da) |
+| **CCTP TokenMessengerV2** | [`0x8FE6B999Dc680CcFDD5Bf7EB0974218be2542DAA`](https://testnet.arcscan.app/address/0x8FE6B999Dc680CcFDD5Bf7EB0974218be2542DAA) |
+| **CCTP MessageTransmitterV2** | [`0xE737e5cEBEEBa77EFE34D4aa090756590b1CE275`](https://testnet.arcscan.app/address/0xE737e5cEBEEBa77EFE34D4aa090756590b1CE275) |
+| **Permit2** | [`0x000000000022D473030F116dDEE9F6B43aC78BA3`](https://testnet.arcscan.app/address/0x000000000022D473030F116dDEE9F6B43aC78BA3) |
 
 ### Base Sepolia (Uniswap v4 + Hook)
 
 | Contract | Address |
 | -------- | ------- |
-| **ArrowCopyTradeHook** | `0x446e60d8EF420c68D1207557Be0BF72fEb7c8040` |
-| **PoolManager** | `0x05E73354cFDd6745C338b50BcFDfA3Aa6fA03408` |
-| **PoolSwapTest** | `0x8b5bcc363dde2614281ad875bad385e0a785d3b9` |
-| **PoolModifyLiquidityTest** | `0x37429cD17Cb1454C34E7F50b09725202Fd533039` |
-| **StateView** | `0x571291b572ed32ce6751a2cb2486ebee8defb9b4` |
-| **Universal Router** | `0x492e6456d9528771018deb9e87ef7750ef184104` |
-| **Quoter** | `0x4a6513c898fe1b2d0e78d3b0e0a4a151589b1cba` |
-| **Permit2** | `0x000000000022D473030F116dDEE9F6B43aC78BA3` |
+| **ArrowCopyTradeHook** | [`0x446e60d8EF420c68D1207557Be0BF72fEb7c8040`](https://base-sepolia.blockscout.com/address/0x446e60d8EF420c68D1207557Be0BF72fEb7c8040) |
+| **PoolManager** | [`0x05E73354cFDd6745C338b50BcFDfA3Aa6fA03408`](https://base-sepolia.blockscout.com/address/0x05E73354cFDd6745C338b50BcFDfA3Aa6fA03408) |
+| **PoolSwapTest** | [`0x8b5bcc363dde2614281ad875bad385e0a785d3b9`](https://base-sepolia.blockscout.com/address/0x8b5bcc363dde2614281ad875bad385e0a785d3b9) |
+| **PoolModifyLiquidityTest** | [`0x37429cD17Cb1454C34E7F50b09725202Fd533039`](https://base-sepolia.blockscout.com/address/0x37429cD17Cb1454C34E7F50b09725202Fd533039) |
+| **StateView** | [`0x571291b572ed32ce6751a2cb2486ebee8defb9b4`](https://base-sepolia.blockscout.com/address/0x571291b572ed32ce6751a2cb2486ebee8defb9b4) |
+| **Universal Router** | [`0x492e6456d9528771018deb9e87ef7750ef184104`](https://base-sepolia.blockscout.com/address/0x492e6456d9528771018deb9e87ef7750ef184104) |
+| **Quoter** | [`0x4a6513c898fe1b2d0e78d3b0e0a4a151589b1cba`](https://base-sepolia.blockscout.com/address/0x4a6513c898fe1b2d0e78d3b0e0a4a151589b1cba) |
+| **Permit2** | [`0x000000000022D473030F116dDEE9F6B43aC78BA3`](https://base-sepolia.blockscout.com/address/0x000000000022D473030F116dDEE9F6B43aC78BA3) |
 
 ## Live Pool — USDC/WETH on Base Sepolia
 
@@ -433,13 +434,14 @@ The agent operates against a custom USDC/WETH pool initialized with the `ArrowCo
 | Property | Value |
 | -------- | ----- |
 | **Pool ID** | `0x85f572247799e4252623ff185c4766d211b618c1a2e1a91eb79d816be7a19de9` |
-| **currency0** | USDC `0x036CbD53842c5426634e7929541eC2318f3dCF7e` (lower address) |
-| **currency1** | WETH `0x4200000000000000000000000000000000000006` (higher address) |
+| **currency0** | USDC [`0x036CbD53842c5426634e7929541eC2318f3dCF7e`](https://base-sepolia.blockscout.com/address/0x036CbD53842c5426634e7929541eC2318f3dCF7e) (lower address) |
+| **currency1** | WETH [`0x4200000000000000000000000000000000000006`](https://base-sepolia.blockscout.com/address/0x4200000000000000000000000000000000000006) (higher address) |
 | **Fee** | 3000 (0.3%) |
 | **Tick Spacing** | 60 |
-| **Hook** | ArrowCopyTradeHook `0x446e60d8EF420c68D1207557Be0BF72fEb7c8040` |
+| **Hook** | ArrowCopyTradeHook [`0x446e60d8EF420c68D1207557Be0BF72fEb7c8040`](https://base-sepolia.blockscout.com/address/0x446e60d8EF420c68D1207557Be0BF72fEb7c8040) |
 | **sqrtPriceX96** | `1771595571142957166518320255467520` (~1 WETH ≈ 2000 USDC) |
 | **Liquidity** | `2.004e11` (full range: ticks −887220 to 887220) |
+| **Init TX** | [`0x72a43cca...`](https://base-sepolia.blockscout.com/tx/0x72a43cca) (block 37345932) |
 
 > **Token ordering**: Uniswap v4 requires `currency0 < currency1` by address. USDC (`0x036C...`) < WETH (`0x4200...`), so **BUY** (USDC→WETH) = `zeroForOne=true`.
 
@@ -539,23 +541,105 @@ cast send $MODIFY_LIQ \
 
 ## Transaction Evidence
 
-| Step | Description | Chain |
-| ---- | ----------- | ----- |
-| Pool init | `initialize()` USDC/WETH with ArrowCopyTradeHook | Base Sepolia |
-| Liquidity (round 1) | `modifyLiquidity()` delta=4e8 (~0.018 USDC) | Base Sepolia |
-| Liquidity (round 2) | `modifyLiquidity()` delta=2e11 (~9 USDC + 0.005 WETH) | Base Sepolia |
-| CCTP burn | `depositForBurn()` V2 (7 params) on Arc → Base Sepolia | Arc Testnet |
-| CCTP mint | `receiveMessage()` on Base Sepolia | Base Sepolia |
-| Swap #1 | `swap()` 0.01 USDC → 0.00199 WETH via PoolSwapTest | Base Sepolia |
+| Step | Description | Chain | TX |
+| ---- | ----------- | ----- | -- |
+| Hook deploy | `CREATE2` deploy ArrowCopyTradeHook | Base Sepolia | [`0x476f8ade...`](https://base-sepolia.blockscout.com/tx/0x476f8adedaeafeb1d933e2fb7227b33aafc7211a460b86f92d0a54ef644964ab) |
+| Pool init | `initialize()` USDC/WETH with hook | Base Sepolia | [`0x72a43cca...`](https://base-sepolia.blockscout.com/tx/0x72a43cca) |
+| Liquidity (round 1) | `modifyLiquidity()` delta=4e8 | Base Sepolia | [`0x48588ce0...`](https://base-sepolia.blockscout.com/tx/0x48588ce0) |
+| Liquidity (round 2) | `modifyLiquidity()` delta=2e11 (~9 USDC + 0.005 WETH) | Base Sepolia | — |
+| CCTP burn | `depositForBurn()` V2 (7 params) Arc → Base Sepolia | Arc Testnet | — |
+| CCTP mint | `receiveMessage()` on Base Sepolia | Base Sepolia | — |
+| Swap #1 | `swap()` 0.01 USDC → 0.00199 WETH | Base Sepolia | [`0xbc42742...`](https://base-sepolia.blockscout.com/tx/0xbc4274220c69d3581a3c7554d99d0cfaf468b77977c0c4376b3e313b28869967) |
+
+> All agent transactions are visible on the [Agent Blockscout page](https://base-sepolia.blockscout.com/address/0x2618B8641334124770f13d765C3F4E79270cE8Ab).
 
 ## Agent Wallet
 
 | Property | Value |
 | -------- | ----- |
-| **Address** | `0x2618B8641334124770f13d765C3F4E79270cE8Ab` |
+| **Address** | [`0x2618B8641334124770f13d765C3F4E79270cE8Ab`](https://base-sepolia.blockscout.com/address/0x2618B8641334124770f13d765C3F4E79270cE8Ab) |
 | **Role** | Executes cross-chain bridge + swap on behalf of users |
 | **Chains** | Arc Testnet (CCTP burn/mint) + Base Sepolia (Uniswap v4 swap) |
 | **Funding** | Needs ETH on Base Sepolia for gas, USDC on Arc for bridging |
+| **Explorer (Base Sepolia)** | [Blockscout](https://base-sepolia.blockscout.com/address/0x2618B8641334124770f13d765C3F4E79270cE8Ab) |
+| **Explorer (Arc)** | [Arcscan](https://testnet.arcscan.app/address/0x2618B8641334124770f13d765C3F4E79270cE8Ab) |
+
+---
+
+## Deployment
+
+```text
+┌─────────────┐     ┌──────────────────┐     ┌──────────────────┐
+│   Vercel     │     │   Railway #1     │     │   Railway #2     │
+│   (client)   │────▶│   (server)       │◀────│   (agent)        │
+│   React+Vite │     │   Express+SQLite │     │   Node.js daemon │
+└─────────────┘     └──────────────────┘     └──────────────────┘
+```
+
+| Component | Platform | Why |
+| --------- | -------- | --- |
+| **Client** | Vercel | Static site hosting, free tier, auto-deploys on push |
+| **Server** | Railway | Persistent Node.js process, SQLite on disk |
+| **Agent** | Railway | Long-running polling daemon |
+
+### Server (Railway)
+
+| Setting | Value |
+| ------- | ----- |
+| **Root Directory** | `server` |
+| **Build Command** | `npm ci && npx tsc` |
+| **Start Command** | `node dist/index.js` |
+
+Environment variables:
+
+| Variable | Value |
+| -------- | ----- |
+| `PORT` | `3001` |
+| `JWT_SECRET` | `openssl rand -hex 32` |
+| `AGENT_SECRET` | shared secret (same for agent) |
+| `ETH_RPC_URL` | `https://eth.llamarpc.com` |
+
+### Agent (Railway)
+
+| Setting | Value |
+| ------- | ----- |
+| **Root Directory** | *(empty — repo root, agent needs `abis/` folder)* |
+| **Build Command** | `cd agent && npm ci && npx tsc` |
+| **Start Command** | `cd agent && node dist/src/index.js` |
+
+Environment variables:
+
+| Variable | Value |
+| -------- | ----- |
+| `AGENT_PRIVATE_KEY` | `0x...` (agent EOA) |
+| `ANTHROPIC_API_KEY` | `sk-ant-...` |
+| `BACKEND_URL` | Railway server URL |
+| `AGENT_SECRET` | same as server |
+| `HOOK_ADDRESS` | `0x446e60d8EF420c68D1207557Be0BF72fEb7c8040` |
+| `ARC_RPC_URL` | `https://rpc.testnet.arc.network` |
+| `BASE_SEPOLIA_RPC_URL` | `https://sepolia.base.org` |
+| `POLL_INTERVAL` | `12000` |
+| `AI_MODEL` | `claude-sonnet-4-20250514` |
+
+### Client (Vercel)
+
+| Setting | Value |
+| ------- | ----- |
+| **Root Directory** | `client` |
+| **Framework** | Vite |
+| **Build Command** | `npm run build` |
+| **Output Directory** | `dist` |
+
+Environment variables:
+
+| Variable | Value |
+| -------- | ----- |
+| `VITE_API_URL` | Railway server URL |
+| `VITE_CIRCLE_CLIENT_KEY` | Circle Modular Wallets test key |
+| `VITE_CIRCLE_CLIENT_URL` | `https://modular-sdk.circle.com/v1/rpc/w3s/buidl` |
+| `VITE_TIPPING_ADDRESS` | `0xDe4b20f3ea6D7C24bbbAa1dfea741b86B3B628da` |
+
+> Full step-by-step with bash scripts: [`scripts/DEPLOY.md`](scripts/DEPLOY.md)
 
 ---
 
@@ -604,6 +688,7 @@ Currently the agent can only execute BUY orders (USDC → token). A full SELL fl
 ```
 
 **Why it's non-trivial:**
+
 - Agent needs delegated approval (ERC-20 `approve`) from the user to move their tokens
 - Requires ERC-4337 session keys or a smart-account `execute()` call signed by the user's passkey
 - Must handle partial fills and slippage protection per-user
