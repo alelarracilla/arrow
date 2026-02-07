@@ -79,9 +79,9 @@ router.get("/:id", (req: Request, res: Response): void => {
   res.json({ post: enriched });
 });
 
-// POST /posts — create a post (with optional pair metadata for "Set Order")
-// dunno if we will be able to ship metadata before deadline, looking back at 
-// this later
+// POST /posts — create a post or idea
+// post_type: "post" (simple text) or "idea" (trade idea with pair/price/side)
+// visibility: "everyone" (public) or "community" (premium, followers only)
 router.post("/", authRequired, (req: Request, res: Response): void => {
   const {
     content,
@@ -91,6 +91,10 @@ router.post("/", authRequired, (req: Request, res: Response): void => {
     pair_address_1,
     pool_fee,
     is_premium,
+    post_type,
+    side,
+    price,
+    visibility,
   } = req.body;
 
   if (!content || typeof content !== "string") {
@@ -98,11 +102,28 @@ router.post("/", authRequired, (req: Request, res: Response): void => {
     return;
   }
 
+  const type = post_type === "idea" ? "idea" : "post";
+
+  // "idea" posts require a pair and side
+  if (type === "idea") {
+    if (!pair) {
+      res.status(400).json({ error: "pair is required for idea posts" });
+      return;
+    }
+    if (!side || !["buy", "sell"].includes(side)) {
+      res.status(400).json({ error: "side must be 'buy' or 'sell' for idea posts" });
+      return;
+    }
+  }
+
+  // visibility: "community" → premium, "everyone" → public
+  const premium = visibility === "community" ? 1 : (is_premium ? 1 : 0);
+
   const id = uuidv4();
 
   db.prepare(
-    `INSERT INTO posts (id, author_id, content, image_url, pair, pair_address_0, pair_address_1, pool_fee, is_premium)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    `INSERT INTO posts (id, author_id, content, image_url, pair, pair_address_0, pair_address_1, pool_fee, is_premium, post_type, side, price)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
   ).run(
     id,
     req.user!.userId,
@@ -112,7 +133,10 @@ router.post("/", authRequired, (req: Request, res: Response): void => {
     pair_address_0 || "",
     pair_address_1 || "",
     pool_fee || 3000,
-    is_premium ? 1 : 0
+    premium,
+    type,
+    side || "",
+    price || ""
   );
 
   const post = db.prepare("SELECT * FROM posts WHERE id = ?").get(id);
@@ -177,6 +201,46 @@ router.get("/feed/following", authRequired, (req: Request, res: Response): void 
     .all(req.user!.userId, limit, offset) as Record<string, unknown>[];
 
   res.json({ posts: enrichPosts(posts, req.user!.userId) });
+});
+
+// GET /posts/agent/unprocessed-ideas — agent fetches idea posts not yet processed
+router.get("/agent/unprocessed-ideas", (req: Request, res: Response): void => {
+  const secret = req.headers["x-agent-secret"];
+  if (secret !== (process.env.AGENT_SECRET || "arrow-agent-secret")) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+
+  const ideas = db
+    .prepare(
+      `SELECT p.*, u.username, u.address, u.avatar_url, u.is_leader
+       FROM posts p
+       JOIN users u ON p.author_id = u.id
+       WHERE p.post_type = 'idea' AND p.agent_processed = 0
+       ORDER BY p.created_at ASC
+       LIMIT 10`
+    )
+    .all() as Record<string, unknown>[];
+
+  res.json({ ideas });
+});
+
+// POST /posts/agent/mark-processed — agent marks an idea as processed
+router.post("/agent/mark-processed", (req: Request, res: Response): void => {
+  const secret = req.headers["x-agent-secret"];
+  if (secret !== (process.env.AGENT_SECRET || "arrow-agent-secret")) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+
+  const { post_id } = req.body;
+  if (!post_id) {
+    res.status(400).json({ error: "post_id is required" });
+    return;
+  }
+
+  db.prepare("UPDATE posts SET agent_processed = 1 WHERE id = ?").run(post_id);
+  res.json({ ok: true });
 });
 
 export default router;

@@ -81,6 +81,10 @@ const POSTS = [
     pair_address_0: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
     pair_address_1: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
     pool_fee: 3000,
+    post_type: "idea" as const,
+    side: "buy",
+    price: "",
+    is_premium: 0,
   },
   {
     author: "defi_sarah",
@@ -90,6 +94,10 @@ const POSTS = [
     pair_address_0: "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
     pair_address_1: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
     pool_fee: 3000,
+    post_type: "idea" as const,
+    side: "buy",
+    price: "68500",
+    is_premium: 1,
   },
   {
     author: "chart_master",
@@ -99,6 +107,10 @@ const POSTS = [
     pair_address_0: "0x514910771AF9Ca656af840dff83E8264EcF986CA",
     pair_address_1: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
     pool_fee: 3000,
+    post_type: "idea" as const,
+    side: "buy",
+    price: "12.50",
+    is_premium: 0,
   },
   {
     author: "defi_sarah",
@@ -108,6 +120,10 @@ const POSTS = [
     pair_address_0: "",
     pair_address_1: "",
     pool_fee: 3000,
+    post_type: "post" as const,
+    side: "",
+    price: "",
+    is_premium: 0,
   },
   {
     author: "crypto_whale",
@@ -117,6 +133,10 @@ const POSTS = [
     pair_address_0: "0xB50721BCf8d664c30412Cfbc6cf7a15145234ad1",
     pair_address_1: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
     pool_fee: 3000,
+    post_type: "idea" as const,
+    side: "sell",
+    price: "",
+    is_premium: 1,
   },
   {
     author: "alice_trades",
@@ -126,12 +146,16 @@ const POSTS = [
     pair_address_0: "",
     pair_address_1: "",
     pool_fee: 3000,
+    post_type: "post" as const,
+    side: "",
+    price: "",
+    is_premium: 0,
   },
 ];
 
 const insertPost = db.prepare(
-  `INSERT INTO posts (id, author_id, content, pair, pair_address_0, pair_address_1, pool_fee)
-   VALUES (?, ?, ?, ?, ?, ?, ?)`
+  `INSERT INTO posts (id, author_id, content, pair, pair_address_0, pair_address_1, pool_fee, post_type, side, price, is_premium)
+   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 );
 
 for (const p of POSTS) {
@@ -144,7 +168,11 @@ for (const p of POSTS) {
     p.pair,
     p.pair_address_0,
     p.pair_address_1,
-    p.pool_fee
+    p.pool_fee,
+    p.post_type,
+    p.side,
+    p.price,
+    p.is_premium
   );
 }
 
