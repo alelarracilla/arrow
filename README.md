@@ -2,7 +2,7 @@
 
 A social trading platform built on **Uniswap v4** and **Circle's Arc Testnet**. Users follow top traders, copy their trades via an AI agent, tip creators with native USDC, and place limit orders — all secured by passkey-based smart accounts.
 
-Built for **ETHGlobal 2026** targeting Uniswap v4, Circle/Arc, and ENS bounties.
+Built for **ETHGlobal HackMoney 2026** targeting **Uniswap v4 Agentic Finance**, **Arc**, **Yellow Network**, and **ENS** bounties.
 
 ## Architecture
 
@@ -17,22 +17,41 @@ arrow/
 ### How It Works
 
 ```text
-Leader swaps on Uniswap v4
-        │
-        ▼
-ArrowCopyTradeHook (afterSwap) emits LeaderSwap event
-        │
-        ▼
-Agent watches events → evaluates with Claude AI
-        │
-        ▼
-Agent POSTs trade proposal to server (pending approval)
-        │
-        ▼
-Client polls proposals → user approves + signs with passkey
-        │
-        ▼
-Circle smart account executes swap on Uniswap v4
+┌─────────────────────────────────────────────────────────┐
+│                    ARROW FLOW                           │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Leader posts Idea (pair, side, price)                  │
+│        │                                                │
+│        ▼                                                │
+│  Server stores idea post (post_type = "idea")           │
+│        │                                                │
+│        ▼                                                │
+│  Agent polls /posts/agent/unprocessed-ideas              │
+│        │                                                │
+│        ▼                                                │
+│  AI evaluates idea → decides market or limit order      │
+│  (no price = market, with price = limit)                │
+│        │                                                │
+│        ▼                                                │
+│  Agent creates trade proposals for followers            │
+│        │                                                │
+│        ▼                                                │
+│  Client polls /trade-proposals/pending                  │
+│  User approves + signs with passkey                     │
+│        │                                                │
+│        ▼                                                │
+│  Circle smart account executes swap on Uniswap v4      │
+│                                                         │
+│  ─── On-chain path (when hook is deployed) ───          │
+│  Leader swaps on Uniswap v4                             │
+│        │                                                │
+│        ▼                                                │
+│  ArrowCopyTradeHook (afterSwap) emits LeaderSwap        │
+│        │                                                │
+│        ▼                                                │
+│  Agent watches events → same AI evaluation flow         │
+└─────────────────────────────────────────────────────────┘
 ```
 
 Tips flow directly: user signs a `tip()` call on `ArrowTipping` via their Circle smart account. Native USDC is sent to the creator minus a configurable platform fee.
@@ -42,8 +61,8 @@ Tips flow directly: user signs a `tip()` call on `ArrowTipping` via their Circle
 | Layer | Technology |
 | ------- | ----------- |
 | **Chain** | Arc Testnet (chain ID `5042002`, native USDC 18 decimals) |
-| **DEX** | Uniswap v4 (afterSwap hook) |
-| **Wallets** | Circle Modular Wallets SDK (passkey auth, smart accounts) |
+| **DEX** | Uniswap v4 (afterSwap hook for copy-trading + limit orders) |
+| **Wallets** | Circle Modular Wallets SDK (passkey auth, ERC-4337 smart accounts) |
 | **Frontend** | React 18, Vite, TailwindCSS, viem |
 | **Backend** | Express, SQLite (WAL mode), JWT auth |
 | **Agent** | Anthropic Claude, viem, polling-based |
@@ -92,6 +111,7 @@ VITE_SWAP_ROUTER_ADDRESS=<swap router address>
 ```env
 PORT=3001
 JWT_SECRET=<random secret>
+AGENT_SECRET=arrow-agent-secret
 ```
 
 **Agent** (`agent/.env`):
@@ -166,7 +186,7 @@ Uniswap v4 `afterSwap` hook for copy-trading and limit orders.
 ```bash
 cd contracts
 source .env
-forge script script/DeployTipping.s.sol --rpc-url arc_testnet --broadcast
+forge script script/DeployArrow.s.sol --rpc-url arc_testnet --broadcast
 ```
 
 **ArrowCopyTradeHook** (requires Uniswap v4 PoolManager on the target chain):
@@ -174,7 +194,7 @@ forge script script/DeployTipping.s.sol --rpc-url arc_testnet --broadcast
 ```bash
 cd contracts
 source .env
-forge script script/DeployArrow.s.sol --rpc-url arc_testnet --broadcast
+forge script script/DeployHook.s.sol --rpc-url arc_testnet --broadcast
 ```
 
 > **Note:** Uniswap v4 is not yet officially deployed on Arc Testnet. The hook deployment requires a PoolManager address. When available, set `POOL_MANAGER` in your `.env`.
@@ -195,17 +215,17 @@ Base URL: `http://localhost:3001`
 ### Auth
 
 | Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| POST | `/auth/wallet` | — | Authenticate with wallet address, returns JWT |
-| GET | `/auth/me` | JWT | Get current user profile |
-| PATCH | `/auth/me` | JWT | Update profile (username, bio, avatar_url, ens_name) |
+| ------ | -------- | ---- | ----------- |
+| POST | `/auth/wallet` | — | Authenticate with wallet address, returns JWT. Auto-creates user if new. |
+| GET | `/auth/me` | JWT | Get current user profile with follower/following counts |
+| PATCH | `/auth/me` | JWT | Update profile (`username`, `bio`, `avatar_url`, `ens_name`) |
 
 ### Users
 
 | Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| GET | `/users` | — | Leaderboard (top by follower count) |
-| GET | `/users/:id` | Optional | User profile + stats + `is_following` |
+| ------ | -------- | ---- | ----------- |
+| GET | `/users` | — | Leaderboard (top users by follower count). `?limit=20` |
+| GET | `/users/:id` | Optional | User profile + stats (`follower_count`, `following_count`, `post_count`, `total_tips_received`, `is_following`) |
 | GET | `/users/address/:address` | — | Lookup user by wallet address |
 | POST | `/users/:id/follow` | JWT | Follow a user |
 | DELETE | `/users/:id/follow` | JWT | Unfollow a user |
@@ -214,64 +234,117 @@ Base URL: `http://localhost:3001`
 
 ### Posts
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| GET | `/posts` | Optional | Feed (all posts, newest first) |
-| GET | `/posts/:id` | Optional | Single post |
-| POST | `/posts` | JWT | Create post |
-| DELETE | `/posts/:id` | JWT | Delete own post |
-| GET | `/posts/user/:userId` | Optional | Posts by user |
-| GET | `/posts/feed/following` | JWT | Posts from followed users |
+Two types: **Post** (simple text) and **Idea** (trade idea with pair/side/price).
 
-Posts include `like_count`, `comment_count`, `is_liked` (when authenticated).
+| Method | Endpoint | Auth | Description |
+| ------ | -------- | ---- | ----------- |
+| GET | `/posts` | Optional | Feed (newest first). `?limit=20&offset=0` |
+| GET | `/posts/:id` | Optional | Single post with enriched data |
+| POST | `/posts` | JWT | Create post or idea (see body below) |
+| DELETE | `/posts/:id` | JWT | Delete own post |
+| GET | `/posts/user/:userId` | Optional | Posts by a specific user |
+| GET | `/posts/feed/following` | JWT | Posts from users you follow |
+
+**Create Post body:**
+
+```json
+{
+  "content": "string (required)",
+  "post_type": "post | idea",
+  "visibility": "everyone | community",
+  "image_url": "string (optional)",
+  "pair": "ETH/USDC (required for ideas)",
+  "pair_address_0": "0x... (optional)",
+  "pair_address_1": "0x... (optional)",
+  "pool_fee": 3000,
+  "side": "buy | sell (required for ideas)",
+  "price": "68500 (optional — empty = market order, set = limit order)"
+}
+```
+
+- `visibility: "everyone"` → public post (`is_premium = 0`)
+- `visibility: "community"` → premium/followers-only (`is_premium = 1`)
+- Ideas without `price` → agent creates **market order** proposals
+- Ideas with `price` → agent creates **limit order** proposals
+
+Response includes: `like_count`, `comment_count`, `author_tip_count`, `is_liked`, `post_type`, `side`, `price`.
+
+### Posts — Agent Endpoints
+
+| Method | Endpoint | Auth | Description |
+| ------ | -------- | ---- | ----------- |
+| GET | `/posts/agent/unprocessed-ideas` | `x-agent-secret` | Fetch idea posts not yet processed by the agent |
+| POST | `/posts/agent/mark-processed` | `x-agent-secret` | Mark an idea as processed. Body: `{ "post_id": "..." }` |
 
 ### Likes & Comments
 
 | Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| POST | `/posts/:postId/like` | JWT | Like a post |
-| DELETE | `/posts/:postId/like` | JWT | Unlike a post |
-| GET | `/posts/:postId/comments` | — | List comments |
-| POST | `/posts/:postId/comments` | JWT | Add comment |
+| ------ | -------- | ---- | ----------- |
+| POST | `/posts/:postId/like` | JWT | Like a post. Returns `like_count`. |
+| DELETE | `/posts/:postId/like` | JWT | Unlike a post. Returns `like_count`. |
+| GET | `/posts/:postId/comments` | — | List comments (with author info). `?limit=20` |
+| POST | `/posts/:postId/comments` | JWT | Add comment. Body: `{ "content": "..." }` |
 | DELETE | `/posts/:postId/comments/:id` | JWT | Delete own comment |
 
 ### Tips
 
 | Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| POST | `/tips` | JWT | Record a tip (after on-chain tx) |
-| GET | `/tips/received/:userId` | — | Tips received by user |
+| ------ | -------- | ---- | ----------- |
+| POST | `/tips` | JWT | Record a tip after on-chain tx. Body: `{ "to_id", "amount", "tx_hash", "message" }` |
+| GET | `/tips/received/:userId` | — | Tips received by user. `?limit=20&offset=0` |
 | GET | `/tips/sent` | JWT | Tips sent by current user |
 
 ### Orders
 
 | Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| POST | `/orders` | JWT | Record a limit order |
-| GET | `/orders` | — | List orders (filterable by user_id, status) |
+| ------ | -------- | ---- | ----------- |
+| POST | `/orders` | JWT | Record a limit order. Body: `{ "pool_key_hash", "zero_for_one", "amount", "trigger_price", "post_id?", "on_chain_order_id?" }` |
+| GET | `/orders` | JWT | List your orders. `?status=pending&limit=20` |
+| PATCH | `/orders/:id/status` | JWT | Update order status. Body: `{ "status": "pending\|executed\|cancelled\|failed", "tx_hash?" }` |
 
 ### Trade Proposals
 
 | Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| POST | `/trade-proposals` | Agent secret | Agent creates proposal |
-| GET | `/trade-proposals/pending` | JWT | User's pending proposals |
-| GET | `/trade-proposals` | JWT | User's proposal history |
-| PATCH | `/trade-proposals/:id/approve` | JWT | Approve proposal |
-| PATCH | `/trade-proposals/:id/reject` | JWT | Reject proposal |
-| PATCH | `/trade-proposals/:id/executed` | JWT | Confirm on-chain execution |
+| ------ | -------- | ---- | ----------- |
+| POST | `/trade-proposals` | `x-agent-secret` | Agent creates proposal. Body: `{ "user_address", "type", "zero_for_one", "amount", "token0?", "token1?", "pool_fee?", "leader_address?", "ai_confidence", "ai_reason", "slippage_bps?", "urgency?" }` |
+| GET | `/trade-proposals/pending` | JWT | User's pending proposals (not expired) |
+| GET | `/trade-proposals` | JWT | User's full proposal history. `?limit=20` |
+| PATCH | `/trade-proposals/:id/approve` | JWT | Approve a pending proposal |
+| PATCH | `/trade-proposals/:id/reject` | JWT | Reject a pending proposal |
+| PATCH | `/trade-proposals/:id/executed` | JWT | Confirm on-chain execution. Body: `{ "tx_hash" }` |
+
+Proposal types: `copy-trade`, `limit-order`, `ai-suggestion`.
+
+### Agent Events
+
+| Method | Endpoint | Auth | Description |
+| ------ | -------- | ---- | ----------- |
+| POST | `/agent/events` | — | Agent notifies backend of events (order executions, etc.) |
 
 ## Agent
 
-The AI agent (`agent/`) monitors on-chain events and creates trade proposals:
+The AI agent (`agent/`) processes trade ideas and on-chain events:
 
-1. **Watches `LeaderSwap` events** from the ArrowCopyTradeHook contract
-2. **Evaluates trades with Claude AI** — considers leader track record, trade size, market conditions
-3. **Creates trade proposals** in the backend for each follower
-4. **Monitors limit orders** — checks if trigger prices are met, proposes execution
-5. **Marks executed orders** on-chain after user approval
+1. **Processes Idea posts** — polls `/posts/agent/unprocessed-ideas`, evaluates with Claude AI, creates trade proposals
+2. **Watches `LeaderSwap` events** from the ArrowCopyTradeHook contract (when deployed)
+3. **Evaluates with AI** — considers leader track record, trade size, market conditions
+4. **Creates trade proposals** for followers (market or limit based on idea price)
+5. **Monitors limit orders** — checks trigger prices, proposes execution
+6. **Marks executed orders** on-chain after user approval
 
-The agent never holds user private keys. Users approve and sign all transactions locally with their Circle passkey.
+The agent **never holds user private keys**. Users approve and sign all transactions locally with their Circle passkey.
+
+### Idea → Trade Proposal Flow
+
+```text
+Idea post (post_type="idea", pair="ETH/USDC", side="buy", price="")
+  → Agent fetches from /posts/agent/unprocessed-ideas
+  → AI analyzes: confidence, suggested amount, slippage
+  → No price? → market order proposal (type="ai-suggestion")
+  → Has price? → limit order proposal (type="limit-order")
+  → Proposal created for each follower
+  → Agent marks idea as processed
+```
 
 ### Agent AI Decision Format
 
@@ -280,6 +353,9 @@ The agent never holds user private keys. Users approve and sign all transactions
   "action": "execute | skip | wait",
   "reason": "brief explanation",
   "confidence": 0.0-1.0,
+  "order_type": "market | limit",
+  "suggested_amount": "10",
+  "suggested_slippage_bps": 50,
   "adjustments": {
     "slippage_bps": 50,
     "urgency": "high | medium | low"
@@ -287,7 +363,7 @@ The agent never holds user private keys. Users approve and sign all transactions
 }
 ```
 
-Proposals are only created when `action === "execute"` and `confidence >= 0.6`.
+Proposals are only created when `action === "execute"` and `confidence >= 0.5`.
 
 ## Key Design Decisions
 
@@ -295,12 +371,13 @@ Proposals are only created when `action === "execute"` and `confidence >= 0.6`.
 - **Passkey auth**: No seed phrases. Users authenticate with device biometrics via Circle Modular Wallets SDK.
 - **Smart accounts**: All user wallets are ERC-4337 smart accounts. Transactions are sent as UserOperations via the bundler client.
 - **Agent proposals**: The agent never executes trades directly. It proposes, the user approves, and the user's smart account executes. This keeps the user in full control.
+- **Dual post types**: Regular posts for social content; Idea posts for actionable trade signals that the AI agent processes.
 - **SQLite**: Lightweight, zero-config database. WAL mode for concurrent reads. Good enough for a hackathon; swap for Postgres in production.
 
 ## Network Details
 
 | Property | Value |
-|----------|-------|
+| -------- | ----- |
 | **Chain** | Arc Testnet |
 | **Chain ID** | `5042002` |
 | **RPC** | `https://rpc.testnet.arc.network` |
@@ -311,7 +388,7 @@ Proposals are only created when `action === "execute"` and `confidence >= 0.6`.
 ## Deployed Contracts (Arc Testnet)
 
 | Contract | Address |
-|----------|--------|
+| -------- | ------- |
 | **ArrowTipping** | `0xDe4b20f3ea6D7C24bbbAa1dfea741b86B3B628da` |
-| **ArrowCopyTradeHook** | Pending (requires PoolManager with cancun EVM support) |
+| **ArrowCopyTradeHook** | Pending (requires PoolManager with Cancun EVM support) |
 | **PoolManager** | Pending (Uniswap v4 uses EIP-1153 transient storage) |
