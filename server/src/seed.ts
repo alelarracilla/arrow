@@ -32,8 +32,16 @@ const TOKENS = {
   USDC: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
   // Base Sepolia WETH
   WETH: "0x4200000000000000000000000000000000000006",
-  // Base Sepolia DAI (test)
-  DAI: "0x7683022d84F726a96c4A6611cD31DBf5409c0Ac9",
+};
+
+// Uniswap v4 pool ordering: currency0 < currency1 by address
+// USDC (0x036C...) < WETH (0x4200...) → currency0=USDC, currency1=WETH
+const POOL_USDC_WETH = {
+  currency0: TOKENS.USDC,
+  currency1: TOKENS.WETH,
+  fee: 3000,
+  tickSpacing: 60,
+  hook: "0x446e60d8EF420c68D1207557Be0BF72fEb7c8040",
 };
 
 // ── Users — real wallets ──
@@ -57,6 +65,13 @@ const USERS = [
     address: "0xa946ab63953c07eb9e723d2adcc326fbf00f2989",
     username: "dan_arc",
     bio: "Arc testnet OG. USDC maximalist.",
+    is_leader: 1,
+  },
+  {
+    id: uuidv4(),
+    address: "0x2618b8641334124770f13d765c3f4e79270ce8ab",
+    username: "arrow_agent",
+    bio: "Arrow's on-chain agent. Executes copy-trades & limit orders on Base Sepolia.",
     is_leader: 1,
   },
   {
@@ -104,10 +119,10 @@ const POSTS = [
     author: "alelarracilla",
     content:
       "WETH/USDC on Base Sepolia looking interesting. Bridging USDC from Arc via CCTP to take a position. The cross-chain flow is smooth — burn on Arc, mint on Base, swap on Uniswap v4.",
-    pair: "WETH/USDC",
-    pair_address_0: TOKENS.WETH,
-    pair_address_1: TOKENS.USDC,
-    pool_fee: 3000,
+    pair: "USDC/WETH",
+    pair_address_0: POOL_USDC_WETH.currency0,
+    pair_address_1: POOL_USDC_WETH.currency1,
+    pool_fee: POOL_USDC_WETH.fee,
     post_type: "idea" as const,
     side: "buy",
     price: "",
@@ -116,24 +131,24 @@ const POSTS = [
   {
     author: "0xaDanteees",
     content:
-      "DAI/USDC spread is widening on Base Sepolia. Good arb opportunity if you bridge USDC from Arc. Setting a limit sell at 1.002.",
-    pair: "DAI/USDC",
-    pair_address_0: TOKENS.DAI,
-    pair_address_1: TOKENS.USDC,
-    pool_fee: 500,
+      "USDC/WETH pool on Base Sepolia is live with our ArrowCopyTradeHook. Watching for leader swaps to copy. Setting a limit sell at 2100.",
+    pair: "USDC/WETH",
+    pair_address_0: POOL_USDC_WETH.currency0,
+    pair_address_1: POOL_USDC_WETH.currency1,
+    pool_fee: POOL_USDC_WETH.fee,
     post_type: "idea" as const,
     side: "sell",
-    price: "1.002",
+    price: "2100",
     is_premium: 1,
   },
   {
     author: "dan_arc",
     content:
       "Testing the full CCTP bridge flow: Arc → Base Sepolia → Uniswap v4 swap → CCTP back to Arc. Attestation takes ~0.5s from Arc. Incredibly fast.",
-    pair: "WETH/USDC",
-    pair_address_0: TOKENS.WETH,
-    pair_address_1: TOKENS.USDC,
-    pool_fee: 3000,
+    pair: "USDC/WETH",
+    pair_address_0: POOL_USDC_WETH.currency0,
+    pair_address_1: POOL_USDC_WETH.currency1,
+    pool_fee: POOL_USDC_WETH.fee,
     post_type: "idea" as const,
     side: "buy",
     price: "",
@@ -156,10 +171,10 @@ const POSTS = [
     author: "chart_master",
     content:
       "WETH showing a clean bullish divergence on the 4H RSI. Accumulation zone around current levels. Bridging 50 USDC from Arc to go long via PoolSwapTest.",
-    pair: "WETH/USDC",
-    pair_address_0: TOKENS.WETH,
-    pair_address_1: TOKENS.USDC,
-    pool_fee: 3000,
+    pair: "USDC/WETH",
+    pair_address_0: POOL_USDC_WETH.currency0,
+    pair_address_1: POOL_USDC_WETH.currency1,
+    pool_fee: POOL_USDC_WETH.fee,
     post_type: "idea" as const,
     side: "buy",
     price: "",
@@ -168,7 +183,7 @@ const POSTS = [
   {
     author: "alelarracilla",
     content:
-      "Arrow architecture: your USDC lives on Arc (native gas token, 18 decimals). When you want to swap, we bridge via Circle CCTP to Base Sepolia where Uniswap v4 is deployed. Swap happens there, then we bridge the output back. All signed with your passkey.",
+      "Arrow architecture: your USDC lives on Arc (native gas token). When you want to swap, we bridge via Circle CCTP to Base Sepolia where Uniswap v4 is deployed. Swap happens there, then we bridge the output back. All signed with your passkey.",
     pair: "",
     pair_address_0: "",
     pair_address_1: "",
@@ -195,14 +210,27 @@ const POSTS = [
     author: "0xaDanteees",
     content:
       "WETH/USDC market sell. Taking profit on the bounce. Bridging output USDC back to Arc via CCTP.",
-    pair: "WETH/USDC",
-    pair_address_0: TOKENS.WETH,
-    pair_address_1: TOKENS.USDC,
-    pool_fee: 3000,
+    pair: "USDC/WETH",
+    pair_address_0: POOL_USDC_WETH.currency0,
+    pair_address_1: POOL_USDC_WETH.currency1,
+    pool_fee: POOL_USDC_WETH.fee,
     post_type: "idea" as const,
     side: "sell",
     price: "",
     is_premium: 1,
+  },
+  {
+    author: "arrow_agent",
+    content:
+      "Agent online. Monitoring leader swaps on Base Sepolia via ArrowCopyTradeHook. Will auto-generate trade proposals for followers when leaders execute swaps through Uniswap v4.",
+    pair: "",
+    pair_address_0: "",
+    pair_address_1: "",
+    pool_fee: 3000,
+    post_type: "post" as const,
+    side: "",
+    price: "",
+    is_premium: 0,
   },
 ];
 
@@ -249,14 +277,18 @@ for (const leader of leaders) {
 const dan = USERS.find((u) => u.username === "dan_arc")!;
 const ale = USERS.find((u) => u.username === "alelarracilla")!;
 const dante = USERS.find((u) => u.username === "0xaDanteees")!;
+const agentUser = USERS.find((u) => u.username === "arrow_agent")!;
 insertFollow.run(dan.id, ale.id);
 insertFollow.run(dan.id, dante.id);
+insertFollow.run(dan.id, agentUser.id);
 
-// alelarracilla follows 0xaDanteees and vice versa
+// alelarracilla follows 0xaDanteees, agent, and vice versa
 insertFollow.run(ale.id, dante.id);
+insertFollow.run(ale.id, agentUser.id);
 insertFollow.run(dante.id, ale.id);
+insertFollow.run(dante.id, agentUser.id);
 
-const followCount = leaders.length * 2 + 4;
+const followCount = leaders.length * 2 + 7;
 console.log(`[seed] ${followCount} follows`);
 
 // ── Tips (USDC amounts — Arc native, 18 decimals displayed as human-readable) ──
@@ -269,6 +301,8 @@ insertTip.run(uuidv4(), bob.id, dante.id, "10.0", "0xseed_tip_002", "Love the ta
 insertTip.run(uuidv4(), alice.id, dan.id, "2.5", "0xseed_tip_003", "Nice cross-chain flow demo");
 insertTip.run(uuidv4(), dan.id, ale.id, "15.0", "0xseed_tip_004", "Arrow is going to be huge");
 insertTip.run(uuidv4(), bob.id, ale.id, "7.5", "0xseed_tip_005", "");
+insertTip.run(uuidv4(), ale.id, agentUser.id, "20.0", "0xseed_tip_006", "Keep the agent running!");
+insertTip.run(uuidv4(), dan.id, agentUser.id, "8.0", "0xseed_tip_007", "Nice copy-trade execution");
 
-console.log("[seed] 5 tips");
+console.log("[seed] 7 tips");
 console.log("[seed] Done!");
