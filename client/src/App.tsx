@@ -7,6 +7,7 @@ import { OptionsSection } from "./components/OptionsSection/OptionsSection";
 import { SearchBar } from "./components/SearchBar/SearchBar";
 import { TradeProposals } from "./components/TradeProposals/TradeProposals";
 import { Profile } from "./pages/profile/Profile";
+import { CreatePostButton } from "./components/CreatePostButton/CreatePostButton";
 
 const Home = () => {
   return (
@@ -31,6 +32,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/profile" element={<Profile />} /> 
         </Routes>
+        <CreatePostButton />
         <NavBar />
       </div>
     </BrowserRouter>
