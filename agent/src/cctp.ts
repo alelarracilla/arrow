@@ -13,6 +13,8 @@ import {
   baseSepoliaPublicClient,
   getArcWalletClient,
   getBaseSepoliaWalletClient,
+  getArcNonce,
+  getBaseSepoliaNonce,
 } from "./clients";
 import { ERC20_ABI, TOKEN_MESSENGER_ABI, MESSAGE_TRANSMITTER_ABI } from "./abis/contracts";
 
@@ -37,22 +39,26 @@ export async function bridgeFromArc(
   mintRecipient: Address,
 ): Promise<{ txHash: Hex }> {
   const walletClient = getArcWalletClient();
+  let nonce = await getArcNonce();
 
-  console.log(`[bridge] Approving ${amount} USDC for TokenMessenger on Arc...`);
+  console.log(`[bridge] Approving ${amount} USDC for TokenMessenger on Arc (nonce=${nonce})...`);
   const approveTx = await walletClient.writeContract({
     address: config.tokens.arcUsdc as Address,
     abi: ERC20_ABI,
     functionName: "approve",
     args: [config.cctp.tokenMessenger as Address, amount],
+    nonce,
   });
   await arcPublicClient.waitForTransactionReceipt({ hash: approveTx });
+  nonce++;
   console.log(`[bridge] Approved. TX: ${approveTx}`);
 
-  console.log(`[bridge] Burning ${amount} USDC on Arc → domain ${destinationDomain}...`);
+  console.log(`[bridge] Burning ${amount} USDC on Arc → domain ${destinationDomain} (nonce=${nonce})...`);
   const burnTx = await walletClient.writeContract({
     address: config.cctp.tokenMessenger as Address,
     abi: TOKEN_MESSENGER_ABI,
     functionName: "depositForBurn",
+    nonce,
     args: [
       amount,
       destinationDomain,
@@ -131,9 +137,11 @@ export async function mintOnBaseSepolia(
   attestation: Hex,
 ): Promise<Hex> {
   const walletClient = getBaseSepoliaWalletClient();
+  const nonce = await getBaseSepoliaNonce();
 
-  console.log("[bridge] Minting USDC on Base Sepolia...");
+  console.log(`[bridge] Minting USDC on Base Sepolia (nonce=${nonce})...`);
   const mintTx = await walletClient.writeContract({
+    nonce,
     address: config.cctp.messageTransmitter as Address,
     abi: MESSAGE_TRANSMITTER_ABI,
     functionName: "receiveMessage",
@@ -152,21 +160,25 @@ export async function bridgeBackToArc(
   mintRecipient: Address,
 ): Promise<{ txHash: Hex }> {
   const walletClient = getBaseSepoliaWalletClient();
+  let nonce = await getBaseSepoliaNonce();
 
-  console.log(`[bridge] Approving ${amount} USDC for bridge back to Arc...`);
+  console.log(`[bridge] Approving ${amount} USDC for bridge back to Arc (nonce=${nonce})...`);
   const approveTx = await walletClient.writeContract({
     address: config.tokens.baseSepoliaUsdc as Address,
     abi: ERC20_ABI,
     functionName: "approve",
     args: [config.cctp.tokenMessenger as Address, amount],
+    nonce,
   });
   await baseSepoliaPublicClient.waitForTransactionReceipt({ hash: approveTx });
+  nonce++;
 
-  console.log(`[bridge] Burning USDC on Base Sepolia → Arc (domain ${config.cctp.arcDomain})...`);
+  console.log(`[bridge] Burning USDC on Base Sepolia → Arc (domain ${config.cctp.arcDomain}, nonce=${nonce})...`);
   const burnTx = await walletClient.writeContract({
     address: config.cctp.tokenMessenger as Address,
     abi: TOKEN_MESSENGER_ABI,
     functionName: "depositForBurn",
+    nonce,
     args: [
       amount,
       config.cctp.arcDomain,
@@ -188,9 +200,11 @@ export async function mintOnArc(
   attestation: Hex,
 ): Promise<Hex> {
   const walletClient = getArcWalletClient();
+  const nonce = await getArcNonce();
 
-  console.log("[bridge] Minting USDC on Arc...");
+  console.log(`[bridge] Minting USDC on Arc (nonce=${nonce})...`);
   const mintTx = await walletClient.writeContract({
+    nonce,
     address: config.cctp.messageTransmitter as Address,
     abi: MESSAGE_TRANSMITTER_ABI,
     functionName: "receiveMessage",

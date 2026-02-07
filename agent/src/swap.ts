@@ -5,7 +5,7 @@
  */
 import { type Address, type Hex } from "viem";
 import { config } from "./config";
-import { baseSepoliaPublicClient, getBaseSepoliaWalletClient } from "./clients";
+import { baseSepoliaPublicClient, getBaseSepoliaWalletClient, getBaseSepoliaNonce } from "./clients";
 import { ERC20_ABI, POOL_SWAP_TEST_ABI } from "./abis/contracts";
 
 // ── Types ──
@@ -34,22 +34,28 @@ export async function swapOnBaseSepolia(
   const walletClient = getBaseSepoliaWalletClient();
   const inputToken = zeroForOne ? poolKey.currency0 : poolKey.currency1;
 
+  // Fetch live nonce to avoid stale cache after prior TX (e.g. mintOnBaseSepolia)
+  let nonce = await getBaseSepoliaNonce();
+
   // Approve input token for PoolSwapTest
-  console.log(`[swap] Approving ${amountIn} of ${inputToken} for PoolSwapTest...`);
+  console.log(`[swap] Approving ${amountIn} of ${inputToken} for PoolSwapTest (nonce=${nonce})...`);
   const approveTx = await walletClient.writeContract({
     address: inputToken,
     abi: ERC20_ABI,
     functionName: "approve",
     args: [config.uniswap.poolSwapTest as Address, amountIn],
+    nonce,
   });
   await baseSepoliaPublicClient.waitForTransactionReceipt({ hash: approveTx });
+  nonce++;
 
   // Execute swap
-  console.log(`[swap] Executing swap on Uniswap v4...`);
+  console.log(`[swap] Executing swap on Uniswap v4 (nonce=${nonce})...`);
   const swapTx = await walletClient.writeContract({
     address: config.uniswap.poolSwapTest as Address,
     abi: POOL_SWAP_TEST_ABI,
     functionName: "swap",
+    nonce,
     args: [
       {
         currency0: poolKey.currency0,

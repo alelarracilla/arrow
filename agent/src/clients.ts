@@ -77,3 +77,17 @@ export function getAgentAddress() {
   if (!config.agentPrivateKey) throw new Error("AGENT_PRIVATE_KEY not set");
   return privateKeyToAccount(config.agentPrivateKey).address;
 }
+
+// ── Nonce Helpers ──
+// viem caches nonces internally, which can go stale after rapid sequential TXs
+// on the same chain. These helpers fetch the live on-chain nonce.
+
+export async function getArcNonce(): Promise<number> {
+  const address = getAgentAddress();
+  return Number(await arcPublicClient.getTransactionCount({ address }));
+}
+
+export async function getBaseSepoliaNonce(): Promise<number> {
+  const address = getAgentAddress();
+  return Number(await baseSepoliaPublicClient.getTransactionCount({ address }));
+}
