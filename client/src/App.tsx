@@ -1,24 +1,41 @@
-import './App.css'
-import { FollowSection } from './components/FollowSection/FollowSection'
-import NavBar from './components/NavBar/NavBar'
-import { NewsSection } from './components/NewsSection/NewsSection'
-import { OptionsSection } from './components/OptionsSection/OptionsSection'
-import { SearchBar } from './components/SearchBar/SearchBar'
-import { TradeProposals } from './components/TradeProposals/TradeProposals'
+import { Route, BrowserRouter, Routes } from "react-router-dom";
+import "./App.css";
+import { FollowSection } from "./components/FollowSection/FollowSection";
+import NavBar from "./components/NavBar/NavBar";
+import { NewsSection } from "./components/NewsSection/NewsSection";
+import { OptionsSection } from "./components/OptionsSection/OptionsSection";
+import { SearchBar } from "./components/SearchBar/SearchBar";
+import { TradeProposals } from "./components/TradeProposals/TradeProposals";
+import { Profile } from "./pages/profile/Profile";
 
-function App(){ 
-
+const Home = () => {
   return (
-    <div >
+    <div>
       <SearchBar />
       <OptionsSection />
       <FollowSection />
-      <tv-ticker-tape symbols='FOREXCOM:SPXUSD,FOREXCOM:NSXUSD,FOREXCOM:DJI,FX:EURUSD,BITSTAMP:BTCUSD,BITSTAMP:ETHUSD,CMCMARKETS:GOLD'></tv-ticker-tape>
+      <tv-ticker-tape symbols="FOREXCOM:SPXUSD,FOREXCOM:NSXUSD,FOREXCOM:DJI,FX:EURUSD,BITSTAMP:BTCUSD,BITSTAMP:ETHUSD,CMCMARKETS:GOLD"></tv-ticker-tape>
       <NewsSection />
       <TradeProposals />
       <NavBar />
     </div>
-  )
+  );
+};
+
+function App() {
+  return (
+    <BrowserRouter>
+      <div>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/perfil" element={<Profile />} /> 
+        </Routes>
+
+        {/* El NavBar se queda fuera de Routes para que sea persistente en todas las páginas */}
+        <NavBar />
+      </div>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
