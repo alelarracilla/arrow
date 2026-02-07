@@ -16,5 +16,6 @@ solc_version = "0.8.26"
 
 [rpc_endpoints]
 arc_testnet = "https://rpc.testnet.arc.network"
+base_sepolia = "https://sepolia.base.org"
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
