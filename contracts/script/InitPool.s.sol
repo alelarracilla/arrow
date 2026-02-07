@@ -75,21 +75,20 @@ contract InitPool is Script {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        // Step 1: Initialize the pool
         console.log("Initializing USDC/WETH pool...");
         IPoolManager(POOL_MANAGER).initialize(key, sqrtPriceX96);
         console.log("Pool initialized!");
 
-        // Step 2: Wrap ETH -> WETH for liquidity
+        // Wrap ETH -> WETH for liquidity
         uint256 wethAmount = 0.001 ether;
         console.log("Wrapping ETH -> WETH:", wethAmount);
         IWETH(WETH).deposit{value: wethAmount}();
 
-        // Step 3: Approve tokens for PoolModifyLiquidityTest
+        // Approve tokens for PoolModifyLiquidityTest
         IWETH(WETH).approve(POOL_MODIFY_LIQUIDITY_TEST, type(uint256).max);
         IERC20(USDC).approve(POOL_MODIFY_LIQUIDITY_TEST, type(uint256).max);
 
-        // Step 4: Add liquidity — wide range around current price
+        // Step 4: Add liquidity — wide range around current price!
         // At 4e14 it needed ~17888 USDC. We have ~22 USDC.
         // Scale: 4e14 * (22/17888) ≈ 4.9e8. Use 4e8 for safety.
         console.log("Adding liquidity...");
