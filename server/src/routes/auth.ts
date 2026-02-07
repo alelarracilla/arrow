@@ -2,6 +2,7 @@ import { Router, Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import db from "../db";
 import { signToken, authRequired } from "../middleware/auth";
+import { resolveEns } from "../ens";
 
 const router = Router();
 
@@ -33,6 +34,21 @@ router.post("/wallet", (req: Request, res: Response): void => {
     ).run(id, normalized, name);
 
     user = db.prepare("SELECT * FROM users WHERE id = ?").get(id) as Record<string, unknown>;
+
+    // Auto-resolve ENS in background (don't block auth response)
+    // this is only for sepholia or non arc addresses i believe, 
+    // will address this later
+    resolveEns(normalized).then((ens) => {
+      if (ens.name || ens.avatar) {
+        const updates: string[] = [];
+        const vals: unknown[] = [];
+        if (ens.name) { updates.push("ens_name = ?"); vals.push(ens.name); }
+        if (ens.avatar) { updates.push("avatar_url = ?"); vals.push(ens.avatar); }
+        vals.push(id);
+        db.prepare(`UPDATE users SET ${updates.join(", ")} WHERE id = ?`).run(...vals);
+        console.log(`[ens] Resolved ${normalized} → ${ens.name} (avatar: ${ens.avatar ? "yes" : "no"})`);
+      }
+    }).catch(() => {});
   }
 
   const token = signToken({

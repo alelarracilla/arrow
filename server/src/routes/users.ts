@@ -1,8 +1,74 @@
 import { Router, Request, Response } from "express";
 import db from "../db";
 import { authRequired } from "../middleware/auth";
+import { resolveEns, resolveEnsAddress } from "../ens";
 
 const router = Router();
+
+// POST /users/:id/resolve-ens — trigger on-chain ENS resolution for a user
+router.post("/:id/resolve-ens", authRequired, async (req: Request, res: Response): Promise<void> => {
+  const user = db
+    .prepare("SELECT id, address FROM users WHERE id = ?")
+    .get(req.params.id) as Record<string, unknown> | undefined;
+
+  if (!user) {
+    res.status(404).json({ error: "User not found" });
+    return;
+  }
+
+  const ens = await resolveEns(user.address as string);
+
+  if (ens.name || ens.avatar) {
+    const updates: string[] = [];
+    const vals: unknown[] = [];
+    if (ens.name) { updates.push("ens_name = ?"); vals.push(ens.name); }
+    if (ens.avatar) { updates.push("avatar_url = ?"); vals.push(ens.avatar); }
+    vals.push(user.id);
+    db.prepare(`UPDATE users SET ${updates.join(", ")} WHERE id = ?`).run(...vals);
+  }
+
+  res.json({ ens_name: ens.name, avatar: ens.avatar });
+});
+
+// GET /users/ens/:name — look up user by ENS name (checks DB first, then on-chain)
+router.get("/ens/:name", async (req: Request, res: Response): Promise<void> => {
+  const ensName = req.params.name;
+
+  // Check DB first
+  const existing = db
+    .prepare("SELECT id, address, username, bio, avatar_url, ens_name, is_leader FROM users WHERE ens_name = ?")
+    .get(ensName) as Record<string, unknown> | undefined;
+
+  if (existing) {
+    res.json({ user: existing });
+    return;
+  }
+
+  // Resolve on-chain: ENS name → address → check if user exists
+  const address = await resolveEnsAddress(ensName as string);
+
+  if (!address) {
+    res.status(404).json({ error: "ENS name not found on-chain" });
+    return;
+  }
+
+  const user = db
+    .prepare("SELECT id, address, username, bio, avatar_url, ens_name, is_leader FROM users WHERE address = ?")
+    .get(address.toLowerCase()) as Record<string, unknown> | undefined;
+
+  if (!user) {
+    res.status(404).json({ error: "No Arrow user with this ENS address" });
+    return;
+  }
+
+  // Update their ENS name in DB if not set
+  if (!user.ens_name) {
+    db.prepare("UPDATE users SET ens_name = ? WHERE id = ?").run(ensName, user.id);
+    user.ens_name = ensName;
+  }
+
+  res.json({ user });
+});
 
 router.get("/:id", (req: Request, res: Response): void => {
   const user = db
