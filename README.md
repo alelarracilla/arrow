@@ -556,3 +556,93 @@ cast send $MODIFY_LIQ \
 | **Role** | Executes cross-chain bridge + swap on behalf of users |
 | **Chains** | Arc Testnet (CCTP burn/mint) + Base Sepolia (Uniswap v4 swap) |
 | **Funding** | Needs ETH on Base Sepolia for gas, USDC on Arc for bridging |
+
+---
+
+## Current Limitations
+
+| Limitation | Detail |
+| ---------- | ------ |
+| **BUY only** | Agent bridges USDC from Arc → Base Sepolia and swaps USDC→WETH. SELL (WETH→USDC) requires the agent to already hold WETH on Base Sepolia. |
+| **Single LP** | Only one USDC/WETH pool exists (created by us). No auto-discovery of pools but comptability with any pool is possible. |
+| **Swap size** | Pool liquidity is ~27 USDC + ~0.0075 WETH. Safe swaps: **0.01–5 USDC**. Max ~25 USDC before heavy slippage. |
+| **No user balance check** | Agent doesn't verify the user has sufficient balance before executing. If the bridge fails, TXs revert on-chain (no fund loss). |
+
+---
+
+## Future Features
+
+### 1. Full SELL Flow (User LP Position → USDC → Bridge)
+
+Currently the agent can only execute BUY orders (USDC → token). A full SELL flow would require the agent to:
+
+``` diagram
+┌─────────────────────────────────────────────────────────────────────┐
+│                    SELL Flow (Future)                               │
+│                                                                     │
+│  User triggers SELL order on Arc                                    │
+│       │                                                             │
+│       ▼                                                             │
+│  Agent checks user's token balance on Base Sepolia                  │
+│       │                                                             │
+│       ├── User has tokens on Base Sepolia?                          │
+│       │     YES ──▶ Swap token → USDC on Uniswap v4                │
+│       │     NO  ──▶ Check if user has tokens on Arc                 │
+│       │              │                                              │
+│       │              ▼                                              │
+│       │         Bridge tokens Arc → Base Sepolia via CCTP           │
+│       │              │                                              │
+│       │              ▼                                              │
+│       │         Swap token → USDC on Uniswap v4                    │
+│       │                                                             │
+│       ▼                                                             │
+│  Bridge USDC back to Arc via CCTP                                   │
+│       │                                                             │
+│       ▼                                                             │
+│  Mint USDC on Arc → send to user wallet                             │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+**Why it's non-trivial:**
+- Agent needs delegated approval (ERC-20 `approve`) from the user to move their tokens
+- Requires ERC-4337 session keys or a smart-account `execute()` call signed by the user's passkey
+- Must handle partial fills and slippage protection per-user
+
+### 2. AI-Powered Trade Proposals from Idea Posts
+
+``` diagram
+┌──────────────────────────────────────────────────────────────────┐
+│              Idea Post → Trade Proposal Pipeline                  │
+│                                                                   │
+│  Leader posts idea: "ETH looking bullish, target $2500"           │
+│       │                                                           │
+│       ▼                                                           │
+│  Agent polls /posts/agent/unprocessed-ideas                       │
+│       │                                                           │
+│       ▼                                                           │
+│  Claude AI evaluates:                                             │
+│    - Sentiment analysis on post content                           │
+│    - Leader's historical accuracy (on-chain trade history)        │
+│    - Current market conditions (pool price, liquidity depth)      │
+│    - Risk assessment (confidence score 0-1)                       │
+│       │                                                           │
+│       ▼                                                           │
+│  If confidence ≥ 0.5 → Create trade proposals for followers      │
+│       │                                                           │
+│       ▼                                                           │
+│  Followers see proposal in UI → approve with passkey → execute    │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+### 3. Other Planned Improvements
+
+| Feature | Description |
+| ------- | ----------- |
+| **Multi-pool support** | Auto-discover and route through best available pool for any token pair |
+| **Pre-flight balance check** | Verify user has sufficient balance before initiating bridge+swap |
+| **Gas estimation** | Show estimated gas cost before execution |
+| **Partial fills** | Handle cases where pool liquidity is insufficient for full order |
+| **SELL via session keys** | ERC-4337 session keys to let agent move user tokens without repeated passkey signing |
+| **Price oracle integration** | Use Uniswap v4 TWAP or Chainlink for accurate trigger price comparison |
+| **Multi-chain expansion** | Support additional CCTP-enabled chains beyond Arc and Base Sepolia |
+| **Notification system** | Push notifications when trade proposals are created or orders are executed |
