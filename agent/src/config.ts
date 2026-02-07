@@ -5,9 +5,12 @@ export const config = {
   rpcUrl: process.env.ARC_RPC_URL || "https://rpc.testnet.arc.network",
   chainId: 5042002,
 
-  hookAddress: process.env.HOOK_ADDRESS as `0x${string}` | undefined,
+  // Arc contracts
   tippingAddress: process.env.TIPPING_ADDRESS as `0x${string}` | undefined,
   swapRouterAddress: process.env.SWAP_ROUTER_ADDRESS as `0x${string}` | undefined,
+
+  // Base Sepolia hook (deployed alongside Uniswap v4 PoolManager)
+  hookAddress: (process.env.HOOK_ADDRESS || "0x446e60d8EF420c68D1207557Be0BF72fEb7c8040") as `0x${string}`,
 
   agentPrivateKey: process.env.AGENT_PRIVATE_KEY as `0x${string}` | undefined,
 
