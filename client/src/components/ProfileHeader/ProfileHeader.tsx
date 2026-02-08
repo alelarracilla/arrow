@@ -1,10 +1,16 @@
 import styles from './ProfileHeader.module.css';
 import profileImg from '../../assets/profile.png';
 
-export const ProfileHeader = () => {
+interface ProfileHeaderProps {
+  user: {
+    username: string;
+  }
+}
+  
+export const ProfileHeader: React.FC<ProfileHeaderProps> = ({user}) => {
   const profileData = {
-    name: "MoonBoy",
-    username: "MoonBoy.eth",
+    name: user.username,
+    username: `${user.username}.eth`,
     followers: "12k",
     ideas: "1.2k",
     following: "1k",

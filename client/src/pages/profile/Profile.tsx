@@ -12,6 +12,7 @@ import c2 from "../../assets/c2.jpg";
 import c3 from "../../assets/c3.jpg";
 import c4 from "../../assets/c4.jpg";
 import c5 from "../../assets/c5.jpg";
+import { useAuth } from "../../context/AuthContext";
 
 const chartImages = [c1, c2, c3, c4, c5];
 
@@ -22,6 +23,8 @@ export const Profile = () => {
 
   const [orderPost, setOrderPost] = useState<Post | null>(null);
   const [tipPost, setTipPost] = useState<Post | null>(null);
+  const user = useAuth()
+  console.log(user)
 
   const fetchPosts = useCallback(async () => {
     try {
@@ -56,7 +59,7 @@ export const Profile = () => {
 
   return (
     <div style={{ marginBottom: "80px" }}>
-      <ProfileHeader />
+      {user?.user && <ProfileHeader user={user.user} />}
 
       {loading && (
         <p style={{ color: "#888", textAlign: "center", marginTop: "20px" }}>
