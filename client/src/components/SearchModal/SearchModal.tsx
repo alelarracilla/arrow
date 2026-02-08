@@ -1,3 +1,4 @@
+import ProfilesList from '../ProfilesList/ProfilesList';
 import styles from './SearchModal.module.css';
 import { FiSearch, FiX, FiPieChart, FiUser, FiLayers } from 'react-icons/fi';
 
@@ -48,6 +49,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
           ))}
         </div>
       </div>
+      <ProfilesList/>
 
       <div className={styles.section}>
         <h3 className={styles.sectionTitle}>Profiles</h3>
