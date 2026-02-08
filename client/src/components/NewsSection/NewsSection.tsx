@@ -51,7 +51,7 @@ export const NewsSection = () => {
             {posts.map((post) => (
                 <NewsCard
                     key={post.id}
-                    image={post.image_url || chart}
+                    image={chart}
                     description={post.content}
                     pair={post.pair || undefined}
                     authorName={post.username || undefined}

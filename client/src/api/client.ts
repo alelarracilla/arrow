@@ -15,10 +15,7 @@ export function getToken(): string | null {
   return authToken;
 }
 
-async function request<T>(
-  path: string,
-  options: RequestInit = {}
-): Promise<T> {
+async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...(options.headers as Record<string, string>),
@@ -92,7 +89,9 @@ export async function getPosts(limit = 20, offset = 0) {
 }
 
 export async function getFollowingFeed(limit = 20, offset = 0) {
-  return request<{ posts: Post[] }>(`/posts/feed/following?limit=${limit}&offset=${offset}`);
+  return request<{ posts: Post[] }>(
+    `/posts/feed/following?limit=${limit}&offset=${offset}`,
+  );
 }
 
 export async function createPost(data: {
@@ -188,13 +187,18 @@ export async function getPendingProposals() {
 }
 
 export async function getProposalHistory(limit = 20) {
-  return request<{ proposals: TradeProposal[] }>(`/trade-proposals?limit=${limit}`);
+  return request<{ proposals: TradeProposal[] }>(
+    `/trade-proposals?limit=${limit}`,
+  );
 }
 
 export async function approveProposal(id: string) {
-  return request<{ proposal: TradeProposal }>(`/trade-proposals/${id}/approve`, {
-    method: "PATCH",
-  });
+  return request<{ proposal: TradeProposal }>(
+    `/trade-proposals/${id}/approve`,
+    {
+      method: "PATCH",
+    },
+  );
 }
 
 export async function rejectProposal(id: string) {
@@ -204,8 +208,45 @@ export async function rejectProposal(id: string) {
 }
 
 export async function confirmProposalExecuted(id: string, txHash: string) {
-  return request<{ proposal: TradeProposal }>(`/trade-proposals/${id}/executed`, {
-    method: "PATCH",
-    body: JSON.stringify({ tx_hash: txHash }),
+  return request<{ proposal: TradeProposal }>(
+    `/trade-proposals/${id}/executed`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ tx_hash: txHash }),
+    },
+  );
+}
+
+export async function topUsersByTipsReceived() {
+  const date = new Date();
+  date.setDate(date.getDate() - 1); 
+  const sinceDate = date.toISOString().split("T")[0];
+
+  const query = `
+    {
+      EVM(dataset: combined, network: eth) {
+        DEXTrades(
+          limit: {count: 20}
+          orderBy: {descending: Trade_Buy_Amount}
+          where: {Block: {Date: {since: "${sinceDate}"}}}
+        ) {
+          Trade {
+            Buy {
+              Amount
+              Buyer 
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  return fetch("https://streaming.bitquery.io/graphql", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${import.meta.env.VITE_BITQUERY_API_KEY}`,
+    },
+    body: JSON.stringify({ query }),
   });
 }
