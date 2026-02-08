@@ -1,29 +1,40 @@
 import React from "react";
+import { NavLink } from "react-router-dom"; // 1. Importar NavLink
 import styles from "./NavBar.module.css";
-import { HiOutlineBookmark } from "react-icons/hi2";
-import { HiOutlineUserCircle } from "react-icons/hi2";
-import { HiOutlineWallet } from "react-icons/hi2";
+import { HiOutlineBookmark, HiOutlineUserCircle, HiOutlineWallet } from "react-icons/hi2";
 import logo from "../../assets/logo.svg";
 
 const NavBar: React.FC = () => {
+  
+  // Función auxiliar para combinar clases si está activo
+  const linkClassName = ({ isActive }: { isActive: boolean }) => 
+    isActive ? `${styles.navItem} ${styles.active}` : styles.navItem;
+
   return (
     <nav className={styles.navbar}>
-      <a href="/" className={styles.navItem}>
+      {/* Home */}
+      <NavLink to="/" className={linkClassName}>
         <img src={logo} alt="Arrow Logo" className={styles.logo} />
         Home
-      </a>
-      <a href="/watchlist" className={styles.navItem}>
+      </NavLink>
+
+      {/* Watchlist */}
+      <NavLink to="/watchlist" className={linkClassName}>
         <HiOutlineBookmark size={24}/>
         Watchlist
-      </a>
-      <a href="/profile" className={styles.navItem}>
+      </NavLink>
+
+      {/* Profile */}
+      <NavLink to="/profile" className={linkClassName}>
         <HiOutlineUserCircle size={24}/>
         Profile
-      </a>
-      <a href="/assets" className={styles.navItem}>
+      </NavLink>
+
+      {/* Assets */}
+      <NavLink to="/assets" className={linkClassName}>
         <HiOutlineWallet size={24}/>
         Assets
-      </a>
+      </NavLink>
     </nav>
   );
 };
