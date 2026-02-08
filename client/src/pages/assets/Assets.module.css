@@ -1,0 +1,298 @@
+.container {
+  background-color: #0b0e11;
+  min-height: 100vh;
+  color: #ffffff;
+  padding: 20px;
+  padding-bottom: 90px; 
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin-top: 70px;
+}
+
+.headerSection {
+  margin-bottom: 24px;
+}
+
+.label {
+  color: #848e9c;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.totalBalance {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 8px 0;
+  color: #eaecef;
+}
+
+.pnl {
+  font-size: 14px;
+  color: #0ecb81; 
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.actionBtnWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.circleBtn {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background-color: #1e2329;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #eaecef;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.circleBtn:active {
+  background-color: #2b3139;
+}
+
+.btnLabel {
+  font-size: 12px;
+  color: #eaecef;
+}
+
+.sectionCard {
+  margin-bottom: 30px;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.viewAll {
+  font-size: 14px;
+  color: #0ecb81;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.barChartContainer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between; 
+  height: 180px;
+  padding-left: 10px; 
+  padding-right: 20px;
+  position: relative;
+}
+
+.yAxis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 20px;
+}
+
+.yLabel {
+  font-size: 10px;
+  color: #848e9c;
+}
+
+.barsWrapper {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  height: 100%;
+  align-items: flex-end;
+  padding-left: 30px; 
+}
+
+.barColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 40px;
+}
+
+.bar {
+  width: 100%;
+  border-radius: 6px;
+  transition: height 0.5s ease;
+}
+
+
+.barSolid {
+  background-color: #00ffbf; 
+  box-shadow: 0 0 10px rgba(0, 255, 191, 0.3);
+}
+
+.barStriped {
+  
+  background: repeating-linear-gradient(
+    45deg,
+    #2b3139,
+    #2b3139 4px,
+    #0b0e11 4px,
+    #0b0e11 8px
+  );
+  border: 1px solid #2b3139;
+}
+
+.barLabel {
+  font-size: 12px;
+  color: #848e9c;
+}
+
+.donutContainer {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.donutChart {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  position: relative;
+  
+  background: conic-gradient(
+    #ff007a 0% 26.6%,   
+    #fcdc2e 26.6% 53.2%, 
+    #5b8bf9 53.2% 100%   
+  );
+}
+
+
+.donutHole {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 160px;
+  height: 160px;
+  background-color: #0b0e11;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.centerLabel {
+  font-size: 14px;
+  color: #5b8bf9;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.centerValue {
+  font-size: 22px;
+  color: #eaecef;
+  font-weight: 500;
+}
+
+
+.allocationList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.allocationRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.assetInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 30%;
+}
+
+.assetIcon {
+  width: 24px;
+  height: 24px;
+}
+
+.assetName {
+  font-size: 14px;
+  font-weight: 500;
+  color: #eaecef;
+}
+
+.holdingsInfo {
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+}
+
+.holdingsValue {
+  font-size: 14px;
+  color: #eaecef;
+  font-weight: 500;
+}
+
+.holdingsAmount {
+  font-size: 10px;
+  color: #848e9c;
+}
+
+.allocationBarContainer {
+  width: 35%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.percentText {
+  font-size: 14px;
+  color: #eaecef;
+}
+
+.progressBarBg {
+  width: 100%;
+  height: 6px;
+  background-color: #1e2329;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressBarFill {
+  height: 100%;
+  border-radius: 3px;
+}
+
+.iconEth { color: #5b8bf9; }
+.iconZama { color: #fcdc2e; }
+.iconUni { color: #ff007a; }

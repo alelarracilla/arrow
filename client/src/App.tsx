@@ -9,6 +9,7 @@ import { TradeProposals } from "./components/TradeProposals/TradeProposals";
 import { Profile } from "./pages/profile/Profile";
 import { CreatePostButton } from "./components/CreatePostButton/CreatePostButton";
 import Watchlist from "./pages/watchlist/Watchlist";
+import Assets from "./pages/assets/Assets";
 
 const Home = () => {
   return (
@@ -33,6 +34,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/profile" element={<Profile />} /> 
           <Route path="/watchlist" element={<Watchlist/>} />
+          <Route path="/assets" element={<Assets />} />
         </Routes>
         <CreatePostButton />
         <NavBar />
